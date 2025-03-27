@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Hero from "./home/Hero"
+import Home from "@/pages/Home"
+import News from '@/pages/News';
 
 function App() {
  
@@ -7,7 +8,8 @@ function App() {
     <Router>
         {/* Define your routes */}
         <Routes>
-          <Route path='/' element={<Hero />} />
+          <Route path='/' element={<Home />} />
+          <Route path='/news' element={<News />} />
         </Routes>
     </Router>
   );
