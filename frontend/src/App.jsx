@@ -4,6 +4,7 @@ import NonAuthenticatedRoute from './routes/NonAuthenticatedRoute';
 import Login from './auth/Login';
 import News from './dashboard/News';
 import GoogleTranslate from './components/GoogleTranslator';
+import Location from './components/ALerts'
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         />
         <Route path="/" element={<Landing />} />
         <Route path="/news" element={<News />} />
+        <Route path="/location" element={<Location />} />
       </Routes>
     </Router>
   );
