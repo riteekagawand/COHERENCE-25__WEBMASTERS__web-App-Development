@@ -1,15 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Hero from "./home/Hero"
+import React from 'react';
+import Header from './components/Header';
+import Hero from './components/Hero';
+import USP from './components/USP';
+import News from './components/News';
+import TimeSaver from './components/TimeSaver';
+import TrafficAnalysis from './components/TrafficAnalysis';
+import Footer from './components/Footer';
 
 function App() {
- 
   return (
-    <Router>
-        {/* Define your routes */}
-        <Routes>
-          <Route path='/' element={<Hero />} />
-        </Routes>
-    </Router>
+    <div className="App">
+      <Header />
+      <Hero />
+      <USP />
+      <News />
+      <TimeSaver />
+      <TrafficAnalysis />
+      <Footer />
+    </div>
   );
 }
 
