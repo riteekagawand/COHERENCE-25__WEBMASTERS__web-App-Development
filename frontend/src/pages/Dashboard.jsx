@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
@@ -400,7 +401,7 @@ const Dashboard = () => {
     labels: ['Traffic'],
   });
 
-  const sparklineOptions = (data) => ({
+  const sparklineOptions = (_data) => ({
     chart: { type: 'area', sparkline: { enabled: true }, height: 40, width: '100%' },
     stroke: { curve: 'smooth', width: 2 },
     fill: {
@@ -420,7 +421,7 @@ const Dashboard = () => {
     tooltip: { enabled: true, x: { show: false }, y: { formatter: (val) => val.toFixed(1) } },
   });
 
-  const conditionSparklineOptions = (data) => ({
+  const conditionSparklineOptions = (_data) => ({
     chart: { type: 'area', sparkline: { enabled: true }, height: 40, width: '100%' },
     stroke: { curve: 'stepline', width: 2 },
     fill: {
@@ -470,6 +471,7 @@ const Dashboard = () => {
     : '#e0e0e0';
 
   const aqiSeries = aqi ? [(aqi / 500) * 100] : [0];
+  // eslint-disable-next-line no-unused-vars
   const wqiSeries = wqi ? [(wqi / 100) * 100] : [0];
   const trafficSeries = trafficInfo.index ? [trafficInfo.index] : [0];
 
