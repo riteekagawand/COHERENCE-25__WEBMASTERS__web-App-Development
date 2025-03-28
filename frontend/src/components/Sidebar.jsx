@@ -15,7 +15,7 @@ const Sidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       {/* Hamburger Icon (Visible when sidebar is closed on mobile) */}
       {!isOpen && (
         <button
@@ -28,7 +28,7 @@ const Sidebar = () => {
 
       {/* Sidebar */}
       <div
-        className={`bg-[#1A2417] fixed  left-0 top-0 flex flex-col h-scroll shadow-md shadow-gray-400 transition-all duration-300 z-40 ${
+        className={`bg-[#1A2417] fixed  left-0 top-0 flex flex-col h-screen shadow-md shadow-gray-400 transition-all duration-300 z-40 ${
           isOpen ? 'w-64' : 'w-16'
         } md:w-64 md:static`} // Toggle width on mobile; always expanded on desktop
       >
