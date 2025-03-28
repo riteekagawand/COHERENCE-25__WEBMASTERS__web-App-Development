@@ -1,10 +1,9 @@
-// src/pages/Maps.jsx
 import React from 'react';
 import MapView from '../components/MapView';
 
 const Maps = () => {
   return (
-    <div>
+    <div className="absolute inset-0 left-16 md:left-16">
       <MapView />
     </div>
   );

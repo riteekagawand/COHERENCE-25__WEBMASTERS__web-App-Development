@@ -3,7 +3,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar'; // Adjust path if needed
 import Maps from './pages/Maps'; // Adjust path if needed
-import Hero from './home/Hero'; // Your existing Hero component
 
 function App() {
   return (
@@ -13,7 +12,6 @@ function App() {
         <Sidebar />
         {/* Define your routes */}
         <Routes>
-          <Route path="/" element={<Hero />} />
           <Route path="/maps" element={<Maps />} />
           {/* <Route path="/overview" element={<div className="ml-64 p-6">Overview Page</div>} />
           <Route path="/inventory" element={<div className="ml-64 p-6">Inventory Page</div>} />

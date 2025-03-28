@@ -1,52 +1,78 @@
-// src/components/Sidebar.js
-import React from 'react';
-import { Link } from 'react-router-dom';
-// import logo from '../assets/logo.png'; // Ensure this path is correct
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+// Icons from react-icons (matching the design)
+import { FaHome, FaBars, FaTimes, FaNewspaper} from 'react-icons/fa';
 
 const Sidebar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+  };
+  
+  const isActive = (path) => location.pathname === path;
+  
   return (
-    <div className="fixed top-0 left-0 w-64 h-screen bg-gray-100 p-6 shadow-lg">
-      {/* Logo Section - Commented Out */}
-      {/* <div className="flex items-center mb-6">
-        <img src={logo} alt="Logo" className="w-12 h-12 mr-2" />
-        <h2 className="text-2xl font-bold text-gray-800">Smart City India</h2>
-      </div> */}
-
-      {/* Navigation Links */}
-      <ul className="space-y-4">
-        <li>
-          <Link
-            to="/overview"
-            className="block p-3 rounded-lg hover:bg-gray-200 text-gray-700"
-          >
-            Overview
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/inventory"
-            className="block p-3 rounded-lg hover:bg-gray-200 text-gray-700"
-          >
-            Inventory
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/training"
-            className="block p-3 rounded-lg hover:bg-gray-200 text-gray-700"
-          >
-            Training Modules
-          </Link>
-        </li>
-        <li>
+    <div className="flex h-screen">
+      {/* Hamburger Icon (Visible when sidebar is closed on mobile) */}
+      {!isOpen && (
+        <button
+          onClick={toggleSidebar}
+          className="fixed top-4 left-4 z-50 text-2xl text-black md:hidden"
+        >
+          <FaBars />
+        </button>
+      )}
+      
+      {/* Sidebar */}
+      <div
+        className={`bg-[#1A2417] fixed left-0 top-0 flex flex-col h-screen shadow-md shadow-gray-400 transition-all duration-300 z-40 ${
+          isOpen ? 'w-64' : 'w-16'
+        } md:w-64 md:static`}
+      >
+        {/* Logo Section */}
+        <div className="flex items-center justify-between h-16 px-4">
+          {isOpen && (
+            <button onClick={toggleSidebar} className="text-2xl text-black md:hidden">
+              <FaTimes />
+            </button>
+          )}
+        </div>
+        
+        {/* Menu Items */}
+        <div className="flex flex-1 flex-col items-start px-4 py-20">
           <Link
             to="/maps"
-            className="block p-3 rounded-lg hover:bg-gray-200 text-gray-700"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/maps') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
           >
-            View Maps
+            <FaHome className="text-2xl" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Maps</span>
           </Link>
-        </li>
-      </ul>
+         
+          <Link
+            to="/news"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/news') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+             <FaNewspaper className="text-lg size-6" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Local News</span>
+          </Link>
+          
+          <Link
+            to="/dashboard"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/dashboard') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+             <FaNewspaper className="text-lg size-6" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Dashboard</span>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
