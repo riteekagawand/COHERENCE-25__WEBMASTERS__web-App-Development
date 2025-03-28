@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Dashboard from '@/pages/Dashboard';
 import Landing from './home/Landing';
 import NonAuthenticatedRoute from './routes/NonAuthenticatedRoute';
 import Login from './auth/Login';
@@ -9,9 +10,7 @@ import Location from './components/ALerts'
 function App() {
   return (
     <Router>
-      {/* Place GoogleTranslate outside of Routes */}
       <GoogleTranslate />
-
       {/* Define your routes */}
       <Routes>
         <Route 
@@ -25,7 +24,8 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/news" element={<News />} />
         <Route path="/location" element={<Location />} />
-      </Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+        </Routes>
     </Router>
   );
 }
