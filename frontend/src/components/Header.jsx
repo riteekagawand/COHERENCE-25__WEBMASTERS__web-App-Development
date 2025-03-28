@@ -1,18 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <header className="fixed top-0 w-full bg-white/90 z-50 shadow-sm">
-      <nav className="container mx-auto flex justify-center py-4">
-        <ul className="flex gap-6 items-center">
-          <li className="text-gray-700 hover:text-black cursor-pointer">Home</li>
-          <li className="text-gray-700 hover:text-black cursor-pointer">About</li>
-          <li className="text-gray-700 hover:text-black cursor-pointer">Services</li>
-          <li className="text-gray-700 hover:text-black cursor-pointer">Pricing</li>
-          <li className="text-gray-700 hover:text-black cursor-pointer">Contact</li>
+    <header className="fixed top-0  bg-white/90 z-50 shadow-sm font-grotesk min-w-full">
+      <nav className="container mx-auto flex justify-between items-center py-4 px-4 sm:px-6 ">
+        {/* Logo (Optional) */}
+        <div className="text-xl font-bold text-gray-900">Logo</div>
+
+        {/* Hamburger Menu for Mobile */}
+        <div className="sm:hidden">
+          <button onClick={toggleMenu} className="text-gray-700 focus:outline-none">
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+              />
+            </svg>
+          </button>
+        </div>
+
+        {/* Navigation Links */}
+        <ul
+          className={`${
+            isOpen ? 'flex' : 'hidden'
+          } sm:flex flex-col sm:flex-row gap-4 sm:gap-6 items-center absolute sm:static top-16 left-0 w-full sm:w-auto bg-white/90 sm:bg-transparent p-4 sm:p-0 shadow-sm sm:shadow-none transition-all duration-300`}
+        >
+          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">Home</li>
+          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">About</li>
+          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">Services</li>
+          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">Pricing</li>
+          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">Contact</li>
           <li>
-            <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800">
-              Try for free
+            <button className="bg-black text-white px-3 py-1 sm:px-4 sm:py-2 rounded-md hover:bg-gray-800 text-sm sm:text-base">
+              Sign Up
             </button>
           </li>
         </ul>

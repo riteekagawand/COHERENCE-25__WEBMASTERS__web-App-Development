@@ -7,36 +7,36 @@ const TimeSaver = () => {
   const cards = [
     {
       title: 'AQI Effects On Humans',
-      description: 'Reason of the above',
-      img: 'https://via.placeholder.com/400x300?text=AQI+Effects',
+      description: 'AQI (Air Quality Index) measures pollution levels and their impact on health.',
+      img: 'https://images.pexels.com/photos/221012/pexels-photo-221012.jpeg?auto=compress&cs=tinysrgb&w=600',
       buttonText: 'Browse Articles',
       bgColor: 'bg-green-500',
     },
     {
       title: 'Traffic Analysis',
-      description: 'Stay up-to-date using our tips and guides on rent payments, leasing, management solutions, and more.',
-      img: 'https://via.placeholder.com/400x300?text=Traffic+Analysis',
+      description: 'Traffic analysis involves studying vehicle flow, congestion patterns, and road usage to improve urban mobility. ',
+      img: 'https://images.pexels.com/photos/31352266/pexels-photo-31352266/free-photo-of-scenic-autumn-street-in-hanoi-with-vibrant-foliage.jpeg?auto=compress&cs=tinysrgb&w=600',
       buttonText: 'Stay Informed',
       bgColor: 'bg-gray-900',
     },
     {
       title: 'Noise Pollution Effect',
-      description: 'Reason of the above statement',
-      img: 'https://via.placeholder.com/400x300?text=Noise+Pollution',
+      description: 'Noise pollution refers to excessive or disturbing sounds that negatively impact human health and the environment. ',
+      img: 'https://images.pexels.com/photos/16005646/pexels-photo-16005646/free-photo-of-lots-of-road-dust-above-the-street.jpeg?auto=compress&cs=tinysrgb&w=600',
       buttonText: 'Stay Informed',
       bgColor: 'bg-green-500',
     },
     {
       title: 'Urban Sustainability',
-      description: 'Learn how to live sustainably in urban environments',
-      img: 'https://via.placeholder.com/400x300?text=Urban+Sustainability',
+      description: 'Urban sustainability focuses on creating cities that balance economic growth . ',
+      img: 'https://images.pexels.com/photos/2682683/pexels-photo-2682683.jpeg?auto=compress&cs=tinysrgb&w=600',
       buttonText: 'Discover More',
       bgColor: 'bg-gray-900',
     },
   ];
 
   const settings = {
-    dots: true,
+    dots: true, // Enabled dots for better navigation on mobile
     infinite: true,
     speed: 500,
     slidesToShow: 3,
@@ -44,56 +44,64 @@ const TimeSaver = () => {
     arrows: true,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1024, // Tablet and below
         settings: {
           slidesToShow: 2,
+          slidesToScroll: 1,
+          arrows: true,
+          dots: true,
         },
       },
       {
-        breakpoint: 640,
+        breakpoint: 640, // Mobile
         settings: {
           slidesToShow: 1,
+          slidesToScroll: 1,
+          arrows: false, // Hide arrows on mobile to save space
+          dots: true,
         },
       },
     ],
   };
 
   return (
-    <section className="py-16 bg-green-500 text-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
-            Yaha kuch aacha Tagline Hona chahye
+    <section className="py-8 sm:py-12 lg:py-16 bg-[#101726] text-white">
+      <div className="container mx-auto px-4 sm:px-6">
+        {/* Title and Subtitle */}
+        <div className="text-center mb-8 sm:mb-10 lg:mb-12">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight font-grotesk">
+          "Transforming India: Smart Innovations Shaping Tomorrow!"
           </h2>
-          <p className="text-lg text-gray-600 mt-4">
-            Kuch aacha hona chahye yaha pe ya phir information
+          <p className="text-base sm:text-lg text-white mt-3 sm:mt-4 font-grotesk">
+          "Innovation Today for a Smarter India Tomorrow!"
           </p>
         </div>
 
+        {/* Slider */}
         <Slider {...settings}>
           {cards.map((card, index) => (
             <div key={index} className="px-2">
               <div
-                className={`${card.bgColor} rounded-2xl overflow-hidden shadow-lg transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group`}
+                className={`${card.bgColor} text-black font-grotesk rounded-2xl overflow-hidden shadow-lg bg-[#d1ebc9] transform transition-all duration-300 hover:-translate-y-2 hover:shadow-xl group`}
               >
                 <div className="relative">
                   <img
                     src={card.img}
                     alt={card.title}
-                    className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-40 sm:h-48  md:h-56 object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <button className="bg-white text-black px-4 py-2 rounded-md font-semibold hover:bg-gray-200 transition-colors">
+                    <button className="bg-white font-grotesk text-black px-3 py-1 sm:px-4 sm:py-2 rounded-md font-semibold hover:bg-gray-200 transition-colors text-sm sm:text-base">
                       Explore
                     </button>
                   </div>
                 </div>
-                <div className="p-6 flex flex-col justify-between">
+                <div className="p-4 sm:p-6 flex flex-col justify-between">
                   <div>
-                    <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
-                    <p className="text-gray-200 mb-4">{card.description}</p>
+                    <h3 className="text-lg sm:text-xl font-grotesk font-semibold mb-2 text-black">{card.title}</h3>
+                    <p className="text-black mb-4 text-sm font-grotesk sm:text-base">{card.description}</p>
                   </div>
-                  <button className="bg-white text-black px-6 py-3 rounded-full font-semibold hover:bg-gray-200 transition-colors w-fit">
+                  <button className="bg-[#1A2417] text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full font-semibold hover:bg-gray-200 transition-colors w-fit text-sm sm:text-base">
                     {card.buttonText}
                   </button>
                 </div>
