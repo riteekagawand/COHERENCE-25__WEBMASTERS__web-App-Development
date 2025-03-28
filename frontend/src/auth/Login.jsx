@@ -22,8 +22,9 @@ import { tokenState } from "@/store/auth";
 const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState(""); // New state for user role
+  const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,22 @@ const UserLogin = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  const allowedDomain = ["@mscb.com", "@cpcb.com"]; // Specify the allowed email domain for admin role
+
+  // Function to validate email domain based on selected role
+  const validateEmailDomain = (email) => {
+    if (role === "admin") {
+      // Check if the email ends with either of the allowed domains
+      const isValidDomain = allowedDomain.some((domain) => email.endsWith(domain));
+      if (!isValidDomain) {
+        toast.error("Invalid authority domain.");
+        return false;
+      }
+    }
+    return true;
+  };
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -76,8 +93,14 @@ const UserLogin = () => {
     e.preventDefault();
     setLoading(true);
 
-    if (!fullName || !email || !password) {
+    if (!fullName || !email || !password || !role) {
       toast.error("All fields are required");
+      return;
+    }
+
+    // Validate email domain based on role
+    if (!validateEmailDomain(email)) {
+      setLoading(false);
       return;
     }
 
@@ -88,6 +111,7 @@ const UserLogin = () => {
           fullName,
           email,
           password,
+          role, // Send the selected role
         }
       );
       if (res.status === 200) {
@@ -155,46 +179,32 @@ const UserLogin = () => {
       className="justify-center flex items-center flex-col bg-[#f9fafb] min-h-screen"
       onSubmit={(e) => {
         e.preventDefault();
-        const activeTab = document.querySelector("[data-state='active']")
-          .textContent;
+        const activeTab = document.querySelector("[data-state='active']").textContent;
         if (activeTab === "Login") {
           handleLogin(e);
         } else if (activeTab === "Sign Up") {
           handleSignup(e);
         }
-      }} 
+      }}
     >
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="w-[400px] "
-      >
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[400px] ">
         <TabsList className="grid w-full grid-cols-2 font-grotesk">
-          <TabsTrigger
-            value="login"
-            className={activeTab === "login" ? "bg-[#72B944] text-white" : ""}
-          >
+          <TabsTrigger value="login" className={activeTab === "login" ? "bg-[#72B944] text-white" : ""}>
             Login
           </TabsTrigger>
-          <TabsTrigger
-            value="signup"
-            className={activeTab === "signup" ? "bg-[#72B944] text-white" : ""}
-          >
+          <TabsTrigger value="signup" className={activeTab === "signup" ? "bg-[#72B944] text-white" : ""}>
             Sign Up
           </TabsTrigger>
         </TabsList>
 
-
         <TabsContent value="login">
-          <Card
-            className="border border-gray-200 bg-[#f9fafb]"
-          >
+          <Card className="border border-gray-200 bg-[#f9fafb]">
             <CardHeader>
               <CardTitle className="font-grotesk">
                 Welcome <span className="text-[#72B944] font-bold">User</span>
               </CardTitle>
               <CardDescription className="font-grotesk">
-              Your Voice Matters – Report, Monitor, Improve!
+                Your Voice Matters – Report, Monitor, Improve!
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -249,51 +259,63 @@ const UserLogin = () => {
         </TabsContent>
 
         <TabsContent value="signup">
-          <Card className="border border-gray-200 bg-[#f9fafb]"
-          >
+          <Card className="border border-gray-200 bg-[#f9fafb]">
             <CardHeader>
               <CardTitle className="font-grotesk">
                 Join <span className="text-green-600">SmartGrid</span>
               </CardTitle>
               <CardDescription className="font-grotesk">
-                    Stay Connected. Stay Informed. Shape Your City!
+                Stay Connected. Stay Informed. Shape Your City!
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 font-grotesk">
               <div className="space-y-1">
-                <Label htmlFor="fullname">Full Name</Label>
+                <Label htmlFor="role">Role</Label>
+                <select
+                  id="role"
+                  className="inputField ml-10 bg-[#d1ebc9] text-black focus:outline-none focus:bg-2 focus:bg-[#d1ebc9] rounded-md"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  required
+                >
+                  <option value="" className="bg-[#d1ebc9]">Select Role</option>
+                  <option value="admin" className="bg-[#d1ebc9]">Authority</option>
+                  <option value="user" className="bg-[#d1ebc9]">Citizen</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="fullName">Full Name</Label>
                 <Input
-                  className="inputField"
                   type="text"
+                  id="fullName"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Enter Your Full Name"
+                  placeholder="Enter Full Name"
                   required
                 />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="email">Email</Label>
                 <Input
-                  className="inputField"
                   type="email"
+                  id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter Your Email"
+                  placeholder="Enter Email"
                   required
                 />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="password">Create Password</Label>
-                <div className="w-full relative">
-                  <Input
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Create Your Password"
-                    className="w-full pr-10 inputField"
-                    required
-                  />
-                  {showPassword ? (
+                <Input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter Password"
+                  required
+                />
+                {showPassword ? (
                     <FaEye
                       onClick={togglePasswordVisibility}
                       className="absolute right-2 top-3 cursor-pointer text-sm"
@@ -305,8 +327,7 @@ const UserLogin = () => {
                     />
                   )}
                 </div>
-              </div>
-              {isOtpSent && (
+                  {isOtpSent && (
                 <div className="space-y-1">
                   <Label htmlFor="otp">Enter OTP</Label>
                   <Input
@@ -329,7 +350,7 @@ const UserLogin = () => {
                   <div className="gap-2 flex items-center">
                     <Button
                       disabled={verifyLoading}
-                      className="w-full mt-2 bg-[#72B944] text-white"
+                      className="w-full mt-2"
                       type="button"
                       onClick={handleVerifyOtp}
                     >
@@ -343,13 +364,13 @@ const UserLogin = () => {
                     </Button>
                     <Button
                       disabled={loading}
-                      className="w-full border mt-2 bg-[#72B944] text-white"
+                      className="w-full border mt-2"
                       variant="ghost"
                       type="button"
                       onClick={handleSignup}
                     >
                       {loading ? (
-                        <div className="flex flex-row gap-2 items-center">
+                        <div className="flex flex-row gap-2 items-center bg-[#72B944]">
                           <ImSpinner2 className="animate-spin" /> Resending OTP
                         </div>
                       ) : (
@@ -361,17 +382,15 @@ const UserLogin = () => {
               )}
             </CardContent>
             <CardFooter>
-              {!isOtpSent && (
-                <Button disabled={loading} className="w-full bg-[#72B944] text-white font-grotesk" type="submit">
-                  {loading ? (
-                    <div className="flex flex-row gap-2 items-center">
-                      <ImSpinner2 className="animate-spin" /> Sending OTP
-                    </div>
-                  ) : (
-                    "Sign Up"
-                  )}
-                </Button>
-              )}
+              <Button className="w-full bg-[#72B944] text-white" disabled={loading} type="submit">
+                {loading ? (
+                  <div className="flex flex-row gap-2 items-center font-grotesk">
+                    <ImSpinner2 className="animate-spin text-white" /> Signing Up...
+                  </div>
+                ) : (
+                  "Sign Up"
+                )}
+              </Button>
             </CardFooter>
           </Card>
         </TabsContent>

@@ -4,14 +4,15 @@ import NonAuthenticatedRoute from './routes/NonAuthenticatedRoute';
 import Login from './auth/Login';
 import News from './dashboard/News';
 import GoogleTranslate from './components/GoogleTranslator';
-import Location from './components/ALerts'
+import Location from './components/ALerts';
+import { Toaster } from "sonner";
 
 function App() {
   return (
     <Router>
       {/* Place GoogleTranslate outside of Routes */}
       <GoogleTranslate />
-
+      <Toaster />
       {/* Define your routes */}
       <Routes>
         <Route 
