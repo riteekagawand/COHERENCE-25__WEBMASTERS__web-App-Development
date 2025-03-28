@@ -130,13 +130,13 @@ body {
   }
   
   ::-webkit-scrollbar-thumb {
-    background-color: #7c3aed;
+    background-color: #283f20;
     border-radius: 20px;
   }
   
   *::selection {
     color: white;
-    background-color: #7c3aed;
+    background-color: #72B944;
   }
   
   body {
@@ -162,7 +162,7 @@ body {
   }
   
   .goog-te-gadget .goog-te-combo {
-    background-color: #7c3aed !important;
+    background-color: #283f20!important;
     color: white !important;
     font-size: 15px;
     border: 2px dotted #ffffff;
@@ -207,7 +207,7 @@ body {
     background-position: 50%;
   }
   .gutter:hover {
-    background-color: #7c3aed;
+    background-color: #72B944;
   }
   
   .gutter.gutter-horizontal {

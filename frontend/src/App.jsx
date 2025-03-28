@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Hero from "./home/Hero"
+import Landing from './home/Landing'
 import NonAuthenticatedRoute from './routes/NonAuthenticatedRoute';
 import Login from "./auth/Login"
+import News from "./dashboard/News"
 
 function App() {
  
@@ -9,15 +10,16 @@ function App() {
     <Router>
         {/* Define your routes */}
         <Routes>
-          <Route path='/' element={<Hero />} />
           <Route
               path="/login"
               element={
-                <NonAuthenticatedRoute>
+                // <NonAuthenticatedRoute>
                   <Login />
-                </NonAuthenticatedRoute>
+                // </NonAuthenticatedRoute>
               }
             />
+            <Route path="/" element={<Landing />} />
+          <Route path='/news' element={<News />} />
         </Routes>
     </Router>
   );

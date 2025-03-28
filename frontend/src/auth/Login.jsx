@@ -147,12 +147,12 @@ const UserLogin = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = "SMART CITY | USER LOGIN / SIGNUP";
+    document.title = "SMART GRID | USER LOGIN / SIGNUP";
   }, []);
 
   return (
     <form
-      className="justify-center min-h-[80vh] flex items-center flex-col bg-[#f9fafb] min-h-screen"
+      className="justify-center flex items-center flex-col bg-[#f9fafb] min-h-screen"
       onSubmit={(e) => {
         e.preventDefault();
         const activeTab = document.querySelector("[data-state='active']")
@@ -169,16 +169,21 @@ const UserLogin = () => {
         onValueChange={setActiveTab}
         className="w-[400px] "
       >
-        <TabsList
-          className="grid w-full grid-cols-2 font-grotesk"
-          style={{
-            backgroundColor: `var(--background-color)`,
-            color: `var(--text-color)`,
-          }}
-        >
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="signup">Sign Up</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 font-grotesk">
+          <TabsTrigger
+            value="login"
+            className={activeTab === "login" ? "bg-[#72B944] text-white" : ""}
+          >
+            Login
+          </TabsTrigger>
+          <TabsTrigger
+            value="signup"
+            className={activeTab === "signup" ? "bg-[#72B944] text-white" : ""}
+          >
+            Sign Up
+          </TabsTrigger>
         </TabsList>
+
 
         <TabsContent value="login">
           <Card
@@ -186,7 +191,7 @@ const UserLogin = () => {
           >
             <CardHeader>
               <CardTitle className="font-grotesk">
-                Welcome <span className="text-purple-500">User</span>
+                Welcome <span className="text-[#72B944] font-bold">User</span>
               </CardTitle>
               <CardDescription className="font-grotesk">
               Your Voice Matters – Report, Monitor, Improve!
@@ -230,10 +235,10 @@ const UserLogin = () => {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full bg-purple-500 font-grotesk" disabled={loading} type="submit">
+              <Button className="w-full bg-[#72B944] text-white font-grotesk" disabled={loading} type="submit">
                 {loading ? (
                   <div className="flex flex-row gap-2 items-center font-grotesk">
-                    <ImSpinner2 className="animate-spin" /> Login you in
+                    <ImSpinner2 className="animate-spin text-white" /> Login you in
                   </div>
                 ) : (
                   "Login"
@@ -248,7 +253,7 @@ const UserLogin = () => {
           >
             <CardHeader>
               <CardTitle className="font-grotesk">
-                Join <span className="text-purple-500">Career Insight</span>
+                Join <span className="text-green-600">SmartGrid</span>
               </CardTitle>
               <CardDescription className="font-grotesk">
                     Stay Connected. Stay Informed. Shape Your City!
@@ -324,7 +329,7 @@ const UserLogin = () => {
                   <div className="gap-2 flex items-center">
                     <Button
                       disabled={verifyLoading}
-                      className="w-full mt-2 bg-purple-500"
+                      className="w-full mt-2 bg-[#72B944] text-white"
                       type="button"
                       onClick={handleVerifyOtp}
                     >
@@ -338,7 +343,7 @@ const UserLogin = () => {
                     </Button>
                     <Button
                       disabled={loading}
-                      className="w-full border mt-2 bg-purple-500"
+                      className="w-full border mt-2 bg-[#72B944] text-white"
                       variant="ghost"
                       type="button"
                       onClick={handleSignup}
@@ -357,7 +362,7 @@ const UserLogin = () => {
             </CardContent>
             <CardFooter>
               {!isOtpSent && (
-                <Button disabled={loading} className="w-full bg-purple-500 font-grotesk" type="submit">
+                <Button disabled={loading} className="w-full bg-[#72B944] text-white font-grotesk" type="submit">
                   {loading ? (
                     <div className="flex flex-row gap-2 items-center">
                       <ImSpinner2 className="animate-spin" /> Sending OTP
