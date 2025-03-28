@@ -1,0 +1,36 @@
+{
+    "hospitals": [
+      { "lat": 13.0604, "lng": 80.2496, "name": "Apollo Hospital Chennai" },
+      { "lat": 13.1281, "lng": 80.2875, "name": "Stanley Medical College Hospital" },
+      { "lat": 13.0810, "lng": 80.2707, "name": "Government General Hospital" },
+      { "lat": 13.0067, "lng": 80.1462, "name": "MIOT International Hospital" },
+      { "lat": 13.0535, "lng": 80.2231, "name": "Sankara Nethralaya" },
+      { "lat": 13.0330, "lng": 80.2551, "name": "Fortis Malar Hospital" },
+      { "lat": 13.0825, "lng": 80.2235, "name": "KMCH Hospital" },
+      { "lat": 12.8763, "lng": 80.0815, "name": "SRM Hospital" },
+      { "lat": 13.0356, "lng": 80.1925, "name": "Vijaya Hospital" },
+      { "lat": 13.0775, "lng": 80.2375, "name": "Billroth Hospitals" },
+      { "lat": 13.0490, "lng": 80.2420, "name": "Kauvery Hospital" },
+      { "lat": 12.9260, "lng": 80.2310, "name": "Gleneagles Global Health City" },
+      { "lat": 13.0935, "lng": 80.1910, "name": "Madras Medical Mission" },
+      { "lat": 13.0827, "lng": 80.2100, "name": "Sundaram Medical Foundation" },
+      { "lat": 12.8185, "lng": 80.0405, "name": "Chettinad Hospital" }
+    ],
+    "medical_stores": [
+      { "lat": 13.0384, "lng": 80.2236, "name": "HealthMart Pharmacy, T. Nagar" },
+      { "lat": 13.0330, "lng": 80.2551, "name": "Apollo Pharmacy, Adyar" },
+      { "lat": 13.0535, "lng": 80.2231, "name": "MedPlus, Nungambakkam" },
+      { "lat": 13.0827, "lng": 80.2100, "name": "Guardian Pharmacy, Anna Nagar" },
+      { "lat": 12.9680, "lng": 80.2590, "name": "HealthKart Pharmacy, Velachery" },
+      { "lat": 13.0420, "lng": 80.2700, "name": "Wellness Forever, Mylapore" },
+      { "lat": 13.0490, "lng": 80.2420, "name": "Apollo Pharmacy, Alwarpet" },
+      { "lat": 12.9250, "lng": 80.1110, "name": "MedPlus, Tambaram" },
+      { "lat": 13.0356, "lng": 80.1925, "name": "Guardian Pharmacy, Vadapalani" },
+      { "lat": 13.0775, "lng": 80.2375, "name": "HealthKart Pharmacy, Shenoy Nagar" },
+      { "lat": 13.0150, "lng": 80.2550, "name": "Wellness Forever, Besant Nagar" },
+      { "lat": 13.0825, "lng": 80.2235, "name": "Apollo Pharmacy, Kilpauk" },
+      { "lat": 12.9500, "lng": 80.2300, "name": "MedPlus, Perungudi" },
+      { "lat": 13.0550, "lng": 80.2570, "name": "Guardian Pharmacy, Royapetta" },
+      { "lat": 12.8185, "lng": 80.0405, "name": "HealthKart Pharmacy, Kelambakkam" }
+    ]
+    }
