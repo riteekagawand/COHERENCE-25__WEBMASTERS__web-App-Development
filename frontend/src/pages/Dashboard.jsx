@@ -6,9 +6,9 @@ import Sidebar from '@/components/Sidebar';
 
 const Dashboard = () => {
   const [aqi, setAqi] = useState(null);
-  const [pm25, setPm25] = useState(null); // Added for PM2.5
-  const [pm10, setPm10] = useState(null); // Added for PM10
-  const [o3, setO3] = useState(null); // Added for O3
+  const [pm25, setPm25] = useState(null);
+  const [pm10, setPm10] = useState(null);
+  const [o3, setO3] = useState(null);
   const [wqi, setWqi] = useState(null);
   const [aqiCategory, setAqiCategory] = useState('');
   const [wqiCategory, setWqiCategory] = useState('');
@@ -33,7 +33,6 @@ const Dashboard = () => {
     'Lucknow', 'Mumbai', 'Nagpur', 'Patna', 'Pune', 'Surat'
   ];
 
-  // Define coordinates for traffic tracking independently
   const cityCoordinates = {
     'Ahmedabad': { lat: 23.0225, lon: 72.5714 },
     'Bengaluru': { lat: 12.9716, lon: 77.5946 },
@@ -148,7 +147,6 @@ const Dashboard = () => {
         );
         const aqiData = response.data.data.aqi;
         setAqi(aqiData);
-        // Extract PM2.5, PM10, and O3 from the response
         const iaqi = response.data.data.iaqi;
         setPm25(iaqi?.pm25?.v || 'N/A');
         setPm10(iaqi?.pm10?.v || 'N/A');
@@ -188,8 +186,6 @@ const Dashboard = () => {
 
     const fetchWeatherAndUv = async () => {
       const { lat, lon } = cityData.cityCoordinates[selectedCity];
-      console.log(`Fetching data for ${selectedCity} with lat=${lat}, lon=${lon}`);
-
       if (!weatherApiKey) {
         console.error('API key missing for OpenWeatherMap');
         setWeatherError('API key missing for OpenWeatherMap');
@@ -199,7 +195,6 @@ const Dashboard = () => {
           const weatherResponse = await axios.get(
             `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${weatherApiKey}&units=metric`
           );
-          console.log('Weather API response:', weatherResponse.data);
           setWeather(weatherResponse.data);
           setWeatherError(null);
         } catch (error) {
@@ -213,7 +208,6 @@ const Dashboard = () => {
         const uvResponse = await axios.get(
           `https://currentuvindex.com/api/v1/uvi?latitude=${lat}&longitude=${lon}`
         );
-        console.log('UV Index API response:', uvResponse.data);
         if (uvResponse.data.ok) {
           setUvIndex(uvResponse.data.now.uvi);
           setUvError(null);
@@ -251,23 +245,22 @@ const Dashboard = () => {
           );
           trafficMap[city] = {
             index: trafficValue,
-            category: trafficCat ? trafficCat.category : 'Unknown'
+            category: trafficCat ? trafficCat.category : 'Unknown',
+            currentSpeed,
+            freeFlowSpeed,
+            travelTime: 'N/A' // Placeholder; could be calculated with additional data
           };
-          console.log(`Traffic data for ${city}:`, trafficMap[city]);
         } catch (error) {
           console.error(`Error fetching traffic for ${city}:`, error.message);
-          trafficMap[city] = { index: null, category: 'Unknown' };
+          trafficMap[city] = { index: null, category: 'Unknown', currentSpeed: 'N/A', freeFlowSpeed: 'N/A', travelTime: 'N/A' };
         }
         await delay(500);
       }
       setTrafficData(trafficMap);
       setTrafficLoading(false);
-      console.log('All traffic data:', trafficMap);
     };
 
-    Promise.allSettled([fetchAqi(), fetchWqi(), fetchWeatherAndUv(), fetchTrafficForAllCities()]).then((results) => {
-      console.log('API fetch results:', results);
-    });
+    Promise.allSettled([fetchAqi(), fetchWqi(), fetchWeatherAndUv(), fetchTrafficForAllCities()]);
   }, [waqiApiToken, weatherApiKey, tomtomApiKey, selectedCity]);
 
   const aqiChartOptions = (value, color) => ({
@@ -297,37 +290,52 @@ const Dashboard = () => {
   });
 
   const wqiChartOptions = (value, color) => ({
-    chart: { type: 'radialBar' },
+    chart: {
+      type: 'radialBar',
+    },
     plotOptions: {
       radialBar: {
-        startAngle: -90,
-        endAngle: 90,
-        hollow: { size: '70%' },
-        track: { background: '#e0e0e0', strokeWidth: '100%' },
+        startAngle: -90, // Start at -90 degrees (left side of semicircle)
+        endAngle: 90,   // End at 90 degrees (right side of semicircle)
+        hollow: {
+          size: '70%', // Size of the hollow center
+        },
+        track: {
+          background: '#e0e0e0', // Background color of the track
+          strokeWidth: '100%',
+        },
         dataLabels: {
           show: true,
-          name: { show: false },
+          name: {
+            show: false, // Hide the label "WQI"
+          },
           value: {
             show: true,
             fontSize: '24px',
             color: '#111',
-            offsetY: -10,
-            formatter: () => (value ? `${value}%` : 'N/A'),
+            offsetY: -10, // Adjust position of the percentage text
+            formatter: () => (value ? `${value}%` : 'N/A'), // Display value as percentage
           },
         },
       },
     },
-    stroke: { dashArray: 0 },
-    fill: { type: 'solid', colors: [color] },
+    stroke: {
+      dashArray: 0, // Solid line (no dashes)
+      lineCap: 'round', // Rounded ends for the gauge
+      width: 8,
+    },
+    fill: {
+      type: 'solid',
+      colors: [color], // Use the dynamic color based on WQI category
+    },
     labels: ['WQI'],
   });
-
   const trafficChartOptions = (value, color) => ({
     chart: { type: 'radialBar' },
     plotOptions: {
       radialBar: {
-        startAngle: -135,
-        endAngle: 135,
+        startAngle: 0,
+        endAngle: 360,
         hollow: { size: '70%' },
         track: { background: '#e0e0e0', strokeWidth: '100%' },
         dataLabels: {
@@ -343,7 +351,7 @@ const Dashboard = () => {
         },
       },
     },
-    stroke: { dashArray: 4 },
+    stroke: { dashArray: 4, lineCap: 'butt', width: 8 },
     fill: { type: 'solid', colors: [color] },
     labels: ['Traffic'],
   });
@@ -354,14 +362,21 @@ const Dashboard = () => {
   const wqiColor = wqi
     ? wqiThresholds.find((t) => wqi >= t.range[0] && wqi <= t.range[1])?.color || '#e0e0e0'
     : '#e0e0e0';
-  const trafficInfo = trafficData[selectedCity] || { index: null, category: 'Unknown' };
+  const trafficInfo = trafficData[selectedCity] || { index: null, category: 'Unknown', currentSpeed: 'N/A', freeFlowSpeed: 'N/A', travelTime: 'N/A' };
   const trafficColor = trafficInfo.index
     ? trafficThresholds.find((t) => trafficInfo.index >= t.range[0] && trafficInfo.index <= t.range[1])?.color || '#e0e0e0'
     : '#e0e0e0';
 
   const aqiSeries = aqi ? [(aqi / 500) * 100] : [0];
-  const wqiSeries = wqi ? [wqi] : [0];
+  const wqiSeries = wqi ? [(wqi / 100) * 100] : [0]; // Scale to 0-100 for consistency
   const trafficSeries = trafficInfo.index ? [trafficInfo.index] : [0];
+
+  // Placeholder WQI parameters
+  const wqiParameters = {
+    pH: '7.5', // Example
+    do: '6.8',  // Dissolved Oxygen in mg/L
+    bod: '3.2'  // Biochemical Oxygen Demand in mg/L
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
@@ -393,16 +408,14 @@ const Dashboard = () => {
 
         {/* Main Cards (AQI, WQI, Traffic) in One Row */}
         <div className="grid grid-cols-3 gap-4 mb-4">
-          {/* AQI Card (Updated to Match the Image) */}
+          {/* AQI Card */}
           <div className="bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-1">Air Quality in {selectedCity}</h2>
             <p className="text-sm text-gray-500 mb-4">Real-time AQI Data</p>
-
             {aqiLoading ? (
               <p className="text-center text-gray-600">Loading AQI data...</p>
             ) : aqi ? (
               <div>
-                {/* Circular Progress for AQI */}
                 <div className="flex justify-center mb-6">
                   <div className="relative">
                     <Chart
@@ -414,18 +427,13 @@ const Dashboard = () => {
                     />
                   </div>
                 </div>
-
-                {/* AQI Category */}
                 <p className="text-center text-gray-700 mb-6">
                   Air Quality:{' '}
                   <span className="font-semibold" style={{ color: aqiColor }}>
                     {aqiCategory}
                   </span>
                 </p>
-
-                {/* Smaller Metrics (PM2.5, PM10, O3) */}
                 <div className="grid grid-cols-3 gap-4">
-                  {/* PM2.5 */}
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-2">
                       <span className="text-white text-sm">PM</span>
@@ -437,8 +445,6 @@ const Dashboard = () => {
                       </p>
                     </div>
                   </div>
-
-                  {/* PM10 */}
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-2">
                       <span className="text-white text-sm">PM</span>
@@ -450,8 +456,6 @@ const Dashboard = () => {
                       </p>
                     </div>
                   </div>
-
-                  {/* O3 */}
                   <div className="flex items-center">
                     <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-2">
                       <span className="text-white text-sm">O3</span>
@@ -470,59 +474,131 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* WQI Card */}
-          <div className="bg-white shadow-lg rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-center mb-4">Water Quality in {selectedCity}</h2>
-            {wqiLoading ? (
-              <p className="text-center text-gray-600">Loading WQI data...</p>
-            ) : wqi ? (
-              <div>
-                <Chart
-                  options={wqiChartOptions(wqi, wqiColor)}
-                  series={wqiSeries}
-                  type="radialBar"
-                  height={250}
-                />
-                <p className="text-center text-gray-700 mt-4">
-                  Current WQI: <span className="font-semibold">{wqi}</span>
-                </p>
-                <p className="text-center text-gray-700">
-                  Water Quality:{' '}
-                  <span className="font-semibold" style={{ color: wqiColor }}>
-                    {wqiCategory}
-                  </span>
-                </p>
-                <p className="text-center text-sm text-gray-500 mt-2">
-                  Data based on 2023 CPCB estimates
-                </p>
-              </div>
-            ) : (
-              <p className="text-center text-red-500">Unable to fetch WQI data</p>
-            )}
+   {/* WQI Card */}
+<div className="bg-white shadow-lg rounded-lg p-6">
+  <h2 className="text-xl font-bold text-gray-800 mb-1">Water Quality in {selectedCity}</h2>
+  <p className="text-sm text-gray-500 mb-4">Based on 2023 CPCB Estimates</p>
+  {wqiLoading ? (
+    <p className="text-center text-gray-600">Loading WQI data...</p>
+  ) : wqi ? (
+    <div>
+      <div className="flex justify-center mb-6">
+        <div className="relative">
+          <Chart
+            options={wqiChartOptions(wqi, wqiColor)}
+            series={[wqi]} // WQI value as a percentage (0-100)
+            type="radialBar"
+            height={250}
+            width={250}
+          />
+        </div>
+      </div>
+      <p className="text-center text-gray-700 mb-6">
+        Water Quality:{' '}
+        <span className="font-semibold" style={{ color: wqiColor }}>
+          {wqiCategory}
+        </span>
+      </p>
+      <div className="grid grid-cols-3 gap-4 ">
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-2">
+            <span className="text-white text-sm">pH</span>
           </div>
-
+          <div>
+            <p className="text-sm text-gray-500">pH Level</p>
+            <p className="text-lg font-semibold text-gray-700">
+              {wqiParameters.pH !== undefined ? wqiParameters.pH : 'N/A'}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-2">
+            <span className="text-white text-sm">DO</span>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Dissolved O₂</p>
+            <p className="text-lg font-semibold text-gray-700">
+              {wqiParameters.do !== undefined ? `${wqiParameters.do} mg/L` : 'N/A'}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-2">
+            <span className="text-white text-sm">BOD</span>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">BOD</p>
+            <p className="text-lg font-semibold text-gray-700">
+              {wqiParameters.bod !== undefined ? `${wqiParameters.bod} mg/L` : 'N/A'}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <p className="text-center text-red-500">Unable to fetch WQI data</p>
+  )}
+</div>
           {/* Traffic Card */}
           <div className="bg-white shadow-lg rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-center mb-4">Traffic in {selectedCity}</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-1">Traffic in {selectedCity}</h2>
+            <p className="text-sm text-gray-500 mb-4">Real-time Traffic Data</p>
             {trafficLoading ? (
               <p className="text-center text-gray-600">Loading traffic data...</p>
             ) : trafficInfo.index !== null ? (
               <div>
-                <Chart
-                  options={trafficChartOptions(trafficInfo.index, trafficColor)}
-                  series={trafficSeries}
-                  type="radialBar"
-                  height={250}
-                />
-                <p className="text-center text-gray-700 mt-4">
-                  Traffic Index: <span className="font-semibold">{trafficInfo.index}%</span>
-                </p>
-                <p className="text-center text-gray-700">
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <Chart
+                      options={trafficChartOptions(trafficInfo.index, trafficColor)}
+                      series={trafficSeries}
+                      type="radialBar"
+                      height={200}
+                      width={200}
+                    />
+                  </div>
+                </div>
+                <p className="text-center text-gray-700 mb-6">
                   Traffic Condition:{' '}
                   <span className="font-semibold" style={{ color: trafficColor }}>
                     {trafficInfo.category}
                   </span>
                 </p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-2">
+                      <span className="text-white text-sm">CS</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Current Speed</p>
+                      <p className="text-lg font-semibold text-gray-700">
+                        {trafficInfo.currentSpeed !== 'N/A' ? `${trafficInfo.currentSpeed} km/h` : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-2">
+                      <span className="text-white text-sm">FS</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Free Flow</p>
+                      <p className="text-lg font-semibold text-gray-700">
+                        {trafficInfo.freeFlowSpeed !== 'N/A' ? `${trafficInfo.freeFlowSpeed} km/h` : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-2">
+                      <span className="text-white text-sm">TT</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Travel Time</p>
+                      <p className="text-lg font-semibold text-gray-700">
+                        {trafficInfo.travelTime !== 'N/A' ? `${trafficInfo.travelTime} min` : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <p className="text-center text-red-500">Unable to fetch traffic data</p>
@@ -530,7 +606,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Weather and UV Cards in a Separate Grid */}
+        {/* Weather and UV Cards */}
         <div className="grid grid-cols-4 gap-4">
           <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Temperature</h3>
@@ -544,7 +620,6 @@ const Dashboard = () => {
               <p className="text-center text-red-500">{weatherError || 'Unable to fetch data'}</p>
             )}
           </div>
-
           <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Humidity</h3>
             {weatherLoading ? (
@@ -557,7 +632,6 @@ const Dashboard = () => {
               <p className="text-center text-red-500">{weatherError || 'Unable to fetch data'}</p>
             )}
           </div>
-
           <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Wind Speed</h3>
             {weatherLoading ? (
@@ -570,7 +644,6 @@ const Dashboard = () => {
               <p className="text-center text-red-500">{weatherError || 'Unable to fetch data'}</p>
             )}
           </div>
-
           <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">UV Index</h3>
             {weatherLoading ? (
@@ -590,7 +663,6 @@ const Dashboard = () => {
               (CC BY 4.0)
             </p>
           </div>
-
           <div className="col-span-2 bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Pressure</h3>
             {weatherLoading ? (
@@ -603,7 +675,6 @@ const Dashboard = () => {
               <p className="text-center text-red-500">{weatherError || 'Unable to fetch data'}</p>
             )}
           </div>
-
           <div className="col-span-2 bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Condition</h3>
             {weatherLoading ? (
