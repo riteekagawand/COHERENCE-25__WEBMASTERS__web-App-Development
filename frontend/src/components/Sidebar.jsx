@@ -71,6 +71,17 @@ const Sidebar = () => {
              <FaNewspaper className="text-lg size-6" />
             <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Local News</span>
           </Link>
+
+          <Link
+            to="/dashboard"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/dashboard') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+             <FaNewspaper className="text-lg size-6" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Dashboard</span>
+          </Link>
         
         </div>
       </div>
