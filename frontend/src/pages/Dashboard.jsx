@@ -1,31 +1,60 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
-import cityData from '../assets/cityData.json'; // Import the JSON file
+import cityData from '../assets/cityData.json'; // Only used for WQI and weather
 import Sidebar from '@/components/Sidebar';
 
 const Dashboard = () => {
   const [aqi, setAqi] = useState(null);
+  const [pm25, setPm25] = useState(null); // Added for PM2.5
+  const [pm10, setPm10] = useState(null); // Added for PM10
+  const [o3, setO3] = useState(null); // Added for O3
   const [wqi, setWqi] = useState(null);
   const [aqiCategory, setAqiCategory] = useState('');
   const [wqiCategory, setWqiCategory] = useState('');
   const [weather, setWeather] = useState(null);
   const [uvIndex, setUvIndex] = useState(null);
+  const [trafficData, setTrafficData] = useState({});
   const [weatherError, setWeatherError] = useState(null);
   const [uvError, setUvError] = useState(null);
   const [aqiLoading, setAqiLoading] = useState(true);
   const [wqiLoading, setWqiLoading] = useState(true);
   const [weatherLoading, setWeatherLoading] = useState(true);
+  const [trafficLoading, setTrafficLoading] = useState(true);
   const [selectedCity, setSelectedCity] = useState('Mumbai');
   const [locationError, setLocationError] = useState(null);
   const waqiApiToken = import.meta.env.VITE_WAQI_API_KEY;
   const weatherApiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
+  const tomtomApiKey = import.meta.env.VITE_TOMTOM_API_KEY;
 
   const cities = [
     'Ahmedabad', 'Bengaluru', 'Chennai', 'Coimbatore', 'Delhi', 'Ghaziabad',
     'Hyderabad', 'Indore', 'Jaipur', 'Kanpur', 'Kochi', 'Kolkata', 'Kozhikode',
     'Lucknow', 'Mumbai', 'Nagpur', 'Patna', 'Pune', 'Surat'
   ];
+
+  // Define coordinates for traffic tracking independently
+  const cityCoordinates = {
+    'Ahmedabad': { lat: 23.0225, lon: 72.5714 },
+    'Bengaluru': { lat: 12.9716, lon: 77.5946 },
+    'Chennai': { lat: 13.0827, lon: 80.2707 },
+    'Coimbatore': { lat: 11.0168, lon: 76.9558 },
+    'Delhi': { lat: 28.7041, lon: 77.1025 },
+    'Ghaziabad': { lat: 28.6692, lon: 77.4538 },
+    'Hyderabad': { lat: 17.3850, lon: 78.4867 },
+    'Indore': { lat: 22.7196, lon: 75.8577 },
+    'Jaipur': { lat: 26.9124, lon: 75.7873 },
+    'Kanpur': { lat: 26.4499, lon: 80.3319 },
+    'Kochi': { lat: 9.9312, lon: 76.2673 },
+    'Kolkata': { lat: 22.5726, lon: 88.3639 },
+    'Kozhikode': { lat: 11.2588, lon: 75.7804 },
+    'Lucknow': { lat: 26.8467, lon: 80.9462 },
+    'Mumbai': { lat: 19.0760, lon: 72.8777 },
+    'Nagpur': { lat: 21.1458, lon: 79.0882 },
+    'Patna': { lat: 25.5941, lon: 85.1376 },
+    'Pune': { lat: 18.5204, lon: 73.8567 },
+    'Surat': { lat: 21.1702, lon: 72.8311 }
+  };
 
   const aqiThresholds = [
     { range: [0, 50], category: 'Excellent', color: '#00FF00' },
@@ -42,6 +71,14 @@ const Dashboard = () => {
     { range: [51, 70], category: 'Medium', color: '#FFA500' },
     { range: [26, 50], category: 'Poor', color: '#FF0000' },
     { range: [0, 25], category: 'Very Poor', color: '#8B4513' },
+  ];
+
+  const trafficThresholds = [
+    { range: [0, 20], category: 'Free Flow', color: '#00FF00' },
+    { range: [21, 40], category: 'Light', color: '#FFFF00' },
+    { range: [41, 60], category: 'Moderate', color: '#FFA500' },
+    { range: [61, 80], category: 'Heavy', color: '#FF0000' },
+    { range: [81, 100], category: 'Severe', color: '#800000' },
   ];
 
   const toRadians = (degrees) => degrees * (Math.PI / 180);
@@ -63,7 +100,7 @@ const Dashboard = () => {
     let minDistance = Infinity;
 
     for (const city of cities) {
-      const { lat, lon } = cityData.cityCoordinates[city];
+      const { lat, lon } = cityCoordinates[city];
       const distance = haversineDistance(userLat, userLon, lat, lon);
       if (distance < minDistance) {
         minDistance = distance;
@@ -72,6 +109,8 @@ const Dashboard = () => {
     }
     return nearestCity;
   };
+
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -109,6 +148,11 @@ const Dashboard = () => {
         );
         const aqiData = response.data.data.aqi;
         setAqi(aqiData);
+        // Extract PM2.5, PM10, and O3 from the response
+        const iaqi = response.data.data.iaqi;
+        setPm25(iaqi?.pm25?.v || 'N/A');
+        setPm10(iaqi?.pm10?.v || 'N/A');
+        setO3(iaqi?.o3?.v || 'N/A');
         const aqiCat = aqiThresholds.find(
           (t) => aqiData >= t.range[0] && aqiData <= t.range[1]
         );
@@ -116,6 +160,9 @@ const Dashboard = () => {
       } catch (error) {
         console.error('Error fetching AQI:', error);
         setAqi(null);
+        setPm25(null);
+        setPm10(null);
+        setO3(null);
         setAqiCategory('Unknown');
       } finally {
         setAqiLoading(false);
@@ -143,7 +190,6 @@ const Dashboard = () => {
       const { lat, lon } = cityData.cityCoordinates[selectedCity];
       console.log(`Fetching data for ${selectedCity} with lat=${lat}, lon=${lon}`);
 
-      // Fetch Weather Data
       if (!weatherApiKey) {
         console.error('API key missing for OpenWeatherMap');
         setWeatherError('API key missing for OpenWeatherMap');
@@ -163,7 +209,6 @@ const Dashboard = () => {
         }
       }
 
-      // Fetch UV Index Data
       try {
         const uvResponse = await axios.get(
           `https://currentuvindex.com/api/v1/uvi?latitude=${lat}&longitude=${lon}`
@@ -184,10 +229,46 @@ const Dashboard = () => {
       }
     };
 
-    Promise.allSettled([fetchAqi(), fetchWqi(), fetchWeatherAndUv()]).then((results) => {
+    const fetchTrafficForAllCities = async () => {
+      if (!tomtomApiKey) {
+        console.error('API key missing for TomTom');
+        setTrafficLoading(false);
+        return;
+      }
+
+      const trafficMap = {};
+      for (const city of cities) {
+        try {
+          const { lat, lon } = cityCoordinates[city];
+          const response = await axios.get(
+            `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?key=${tomtomApiKey}&point=${lat},${lon}`
+          );
+          const { currentSpeed, freeFlowSpeed } = response.data.flowSegmentData;
+          const trafficIdx = Math.min(100, Math.round(((freeFlowSpeed - currentSpeed) / freeFlowSpeed) * 100));
+          const trafficValue = trafficIdx >= 0 ? trafficIdx : 0;
+          const trafficCat = trafficThresholds.find(
+            (t) => trafficValue >= t.range[0] && trafficValue <= t.range[1]
+          );
+          trafficMap[city] = {
+            index: trafficValue,
+            category: trafficCat ? trafficCat.category : 'Unknown'
+          };
+          console.log(`Traffic data for ${city}:`, trafficMap[city]);
+        } catch (error) {
+          console.error(`Error fetching traffic for ${city}:`, error.message);
+          trafficMap[city] = { index: null, category: 'Unknown' };
+        }
+        await delay(500);
+      }
+      setTrafficData(trafficMap);
+      setTrafficLoading(false);
+      console.log('All traffic data:', trafficMap);
+    };
+
+    Promise.allSettled([fetchAqi(), fetchWqi(), fetchWeatherAndUv(), fetchTrafficForAllCities()]).then((results) => {
       console.log('API fetch results:', results);
     });
-  }, [waqiApiToken, weatherApiKey, selectedCity]);
+  }, [waqiApiToken, weatherApiKey, tomtomApiKey, selectedCity]);
 
   const aqiChartOptions = (value, color) => ({
     chart: { type: 'radialBar' },
@@ -241,26 +322,54 @@ const Dashboard = () => {
     labels: ['WQI'],
   });
 
+  const trafficChartOptions = (value, color) => ({
+    chart: { type: 'radialBar' },
+    plotOptions: {
+      radialBar: {
+        startAngle: -135,
+        endAngle: 135,
+        hollow: { size: '70%' },
+        track: { background: '#e0e0e0', strokeWidth: '100%' },
+        dataLabels: {
+          show: true,
+          name: { show: false },
+          value: {
+            show: true,
+            fontSize: '24px',
+            color: '#111',
+            offsetY: 0,
+            formatter: () => (value ? `${value}%` : 'N/A'),
+          },
+        },
+      },
+    },
+    stroke: { dashArray: 4 },
+    fill: { type: 'solid', colors: [color] },
+    labels: ['Traffic'],
+  });
+
   const aqiColor = aqi
     ? aqiThresholds.find((t) => aqi >= t.range[0] && aqi <= t.range[1])?.color || '#e0e0e0'
     : '#e0e0e0';
   const wqiColor = wqi
     ? wqiThresholds.find((t) => wqi >= t.range[0] && wqi <= t.range[1])?.color || '#e0e0e0'
     : '#e0e0e0';
+  const trafficInfo = trafficData[selectedCity] || { index: null, category: 'Unknown' };
+  const trafficColor = trafficInfo.index
+    ? trafficThresholds.find((t) => trafficInfo.index >= t.range[0] && trafficInfo.index <= t.range[1])?.color || '#e0e0e0'
+    : '#e0e0e0';
 
   const aqiSeries = aqi ? [(aqi / 500) * 100] : [0];
   const wqiSeries = wqi ? [wqi] : [0];
+  const trafficSeries = trafficInfo.index ? [trafficInfo.index] : [0];
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
-      {/* Sidebar on the Left */}
       <div className="w-64 bg-white shadow-lg h-screen fixed top-0 left-0">
         <Sidebar />
       </div>
 
-      {/* Main Content Area */}
       <div className="flex-1 ml-64 p-4">
-        {/* City Selection Dropdown */}
         <div className="w-full max-w-md mb-4">
           <label htmlFor="city-select" className="block text-lg font-medium text-gray-700 mb-2">
             Select City:
@@ -282,38 +391,87 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Bento Grid for Data Cards */}
-        <div className="grid grid-cols-4 gap-4 auto-rows-[minmax(200px, auto)]">
-          {/* AQI Card - Spans 2 columns */}
-          <div className="col-span-2 bg-white shadow-lg rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-center mb-4">Air Quality in {selectedCity}</h2>
+        {/* Main Cards (AQI, WQI, Traffic) in One Row */}
+        <div className="grid grid-cols-3 gap-4 mb-4">
+          {/* AQI Card (Updated to Match the Image) */}
+          <div className="bg-white shadow-lg rounded-lg p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-1">Air Quality in {selectedCity}</h2>
+            <p className="text-sm text-gray-500 mb-4">Real-time AQI Data</p>
+
             {aqiLoading ? (
               <p className="text-center text-gray-600">Loading AQI data...</p>
             ) : aqi ? (
               <div>
-                <Chart
-                  options={aqiChartOptions(aqi, aqiColor)}
-                  series={aqiSeries}
-                  type="radialBar"
-                  height={350}
-                />
-                <p className="text-center text-gray-700 mt-4">
-                  Current AQI: <span className="font-semibold">{aqi}</span>
-                </p>
-                <p className="text-center text-gray-700">
+                {/* Circular Progress for AQI */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <Chart
+                      options={aqiChartOptions(aqi, aqiColor)}
+                      series={aqiSeries}
+                      type="radialBar"
+                      height={200}
+                      width={200}
+                    />
+                  </div>
+                </div>
+
+                {/* AQI Category */}
+                <p className="text-center text-gray-700 mb-6">
                   Air Quality:{' '}
                   <span className="font-semibold" style={{ color: aqiColor }}>
                     {aqiCategory}
                   </span>
                 </p>
+
+                {/* Smaller Metrics (PM2.5, PM10, O3) */}
+                <div className="grid grid-cols-3 gap-4">
+                  {/* PM2.5 */}
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-2">
+                      <span className="text-white text-sm">PM</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">PM2.5</p>
+                      <p className="text-lg font-semibold text-gray-700">
+                        {pm25 !== 'N/A' ? `${pm25} µg/m³` : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* PM10 */}
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-2">
+                      <span className="text-white text-sm">PM</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">PM10</p>
+                      <p className="text-lg font-semibold text-gray-700">
+                        {pm10 !== 'N/A' ? `${pm10} µg/m³` : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* O3 */}
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-2">
+                      <span className="text-white text-sm">O3</span>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Ozone</p>
+                      <p className="text-lg font-semibold text-gray-700">
+                        {o3 !== 'N/A' ? `${o3} ppb` : 'N/A'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <p className="text-center text-red-500">Unable to fetch AQI data</p>
             )}
           </div>
 
-          {/* WQI Card - Spans 2 columns */}
-          <div className="col-span-2 bg-white shadow-lg rounded-lg p-6">
+          {/* WQI Card */}
+          <div className="bg-white shadow-lg rounded-lg p-6">
             <h2 className="text-2xl font-bold text-center mb-4">Water Quality in {selectedCity}</h2>
             {wqiLoading ? (
               <p className="text-center text-gray-600">Loading WQI data...</p>
@@ -343,8 +501,38 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Temperature Card - Spans 1 column */}
-          <div className="col-span-1 bg-white shadow-lg rounded-lg p-6">
+          {/* Traffic Card */}
+          <div className="bg-white shadow-lg rounded-lg p-6">
+            <h2 className="text-2xl font-bold text-center mb-4">Traffic in {selectedCity}</h2>
+            {trafficLoading ? (
+              <p className="text-center text-gray-600">Loading traffic data...</p>
+            ) : trafficInfo.index !== null ? (
+              <div>
+                <Chart
+                  options={trafficChartOptions(trafficInfo.index, trafficColor)}
+                  series={trafficSeries}
+                  type="radialBar"
+                  height={250}
+                />
+                <p className="text-center text-gray-700 mt-4">
+                  Traffic Index: <span className="font-semibold">{trafficInfo.index}%</span>
+                </p>
+                <p className="text-center text-gray-700">
+                  Traffic Condition:{' '}
+                  <span className="font-semibold" style={{ color: trafficColor }}>
+                    {trafficInfo.category}
+                  </span>
+                </p>
+              </div>
+            ) : (
+              <p className="text-center text-red-500">Unable to fetch traffic data</p>
+            )}
+          </div>
+        </div>
+
+        {/* Weather and UV Cards in a Separate Grid */}
+        <div className="grid grid-cols-4 gap-4">
+          <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Temperature</h3>
             {weatherLoading ? (
               <p className="text-center text-gray-600">Loading...</p>
@@ -357,8 +545,7 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Humidity Card - Spans 1 column */}
-          <div className="col-span-1 bg-white shadow-lg rounded-lg p-6">
+          <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Humidity</h3>
             {weatherLoading ? (
               <p className="text-center text-gray-600">Loading...</p>
@@ -371,8 +558,7 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Wind Speed Card - Spans 1 column */}
-          <div className="col-span-1 bg-white shadow-lg rounded-lg p-6">
+          <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Wind Speed</h3>
             {weatherLoading ? (
               <p className="text-center text-gray-600">Loading...</p>
@@ -385,8 +571,7 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* UV Index Card - Spans 1 column */}
-          <div className="col-span-1 bg-white shadow-lg rounded-lg p-6">
+          <div className="bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">UV Index</h3>
             {weatherLoading ? (
               <p className="text-center text-gray-600">Loading...</p>
@@ -398,11 +583,14 @@ const Dashboard = () => {
               <p className="text-center text-red-500">{uvError || 'Unable to fetch data'}</p>
             )}
             <p className="text-center text-sm text-gray-500 mt-2">
-              Data provided by <a href="https://currentuvindex.com" target="_blank" rel="noopener noreferrer">CurrentUVIndex</a> (CC BY 4.0)
+              Data provided by{' '}
+              <a href="https://currentuvindex.com" target="_blank" rel="noopener noreferrer">
+                CurrentUVIndex
+              </a>{' '}
+              (CC BY 4.0)
             </p>
           </div>
 
-          {/* Pressure Card - Spans 2 columns */}
           <div className="col-span-2 bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Pressure</h3>
             {weatherLoading ? (
@@ -416,7 +604,6 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Weather Description Card - Spans 2 columns */}
           <div className="col-span-2 bg-white shadow-lg rounded-lg p-6">
             <h3 className="text-xl font-bold text-center mb-2">Condition</h3>
             {weatherLoading ? (
