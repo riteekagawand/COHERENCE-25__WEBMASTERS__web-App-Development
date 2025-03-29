@@ -51,15 +51,24 @@ const Sidebar = () => {
         {/* Menu Items */}
         <div className="flex flex-1 flex-col items-start px-4 py-20">
           <Link
-            to="/userdash"
+            to="/dashboard"
             className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
-              isActive('/userdash') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+              isActive('/dashboard') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
             } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
           >
             <FaHome className="text-2xl" />
-            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Overview</span>
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Dashboard</span>
           </Link>
          
+          <Link
+            to="/carbon-footprint"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/carbon-footprint') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+            <FaHome className="text-2xl" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Carbon Footprint</span>
+          </Link>
       
           <Link
             to="/news"

@@ -7,6 +7,7 @@ import GoogleTranslate from './components/GoogleTranslator';
 import Location from './components/ALerts';
 import { Toaster } from "sonner";
 import Home from './home/Landing';
+import CarbonFootprintCalculator from './dashboard/CarbonFootprint';
 // import Navbar from './home/Navbar';
 
 function App() {
@@ -29,6 +30,8 @@ function App() {
         <Route path="/news" element={<News />} />
         <Route path="/location" element={<Location />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/carbon-footprint" element={<CarbonFootprintCalculator />} />
+
         </Routes>
     </Router>
   );
