@@ -2,6 +2,11 @@
 import React from 'react'
 import Header from './Navbar'
 import HeroSection from './Hero'
+import USP from './USP'
+import News from './FindNews'
+import TimeSaver from './TimeSaver'
+import Traffic from './TrafficAnalysis'
+import Footer from './Footer'
 
 
 const Home = () => {
@@ -11,7 +16,11 @@ const Home = () => {
       <Header />
       </div>
       <HeroSection />
-     
+      <USP />
+      <News />
+      <TimeSaver />
+      <Traffic />
+      <Footer />
     </div>
   )
 }

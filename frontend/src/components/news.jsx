@@ -1,5 +1,6 @@
 import  { useState, useEffect } from 'react';
 import { FaArrowRight } from 'react-icons/fa';
+import Sidebar from './Sidebar';
 
 const News = () => {
   const [, setArticles] = useState([]);
@@ -76,7 +77,8 @@ const News = () => {
   }
 
   return (
-    <div className="p-6 bg-[#d1ebc9] min-h-screen">
+    <div className=" bg-[#d1ebc9] min-h-screen">
+      <Sidebar />
       {/* Filter Buttons */}
       <div className="mb-8 flex flex-wrap gap-3">
         {['All', 'Mumbai-Specific', 'Government', 'Entertainment', 'Sports'].map((filter) => (
