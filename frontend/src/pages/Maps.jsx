@@ -1,12 +1,13 @@
 import React from 'react';
 import MapView from '../components/MapView';
 
-const Maps = () => {
+const Map = () => {
   return (
-    <div className="absolute inset-0 left-16 md:left-16">
+    <div>
+      <h1 className="text-2xl font-bold text-center my-4">Traffic Map</h1>
       <MapView />
     </div>
   );
 };
 
-export default Maps;
+export default Map;

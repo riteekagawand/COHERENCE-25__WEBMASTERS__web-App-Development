@@ -6,3 +6,8 @@
 .leaflet-default-icon-path {
     background-image: url(https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png);
   }
+
+  .custom-icon {
+    background: transparent !important;
+    border: none !important;
+  }
