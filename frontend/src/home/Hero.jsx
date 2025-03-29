@@ -1,5 +1,5 @@
 import React from 'react';
-
+import hero from '../assets/FH.png'
 const HeroSection = () => {
   return (
     <div id='home' className="relative min-h-screen bg-white">
@@ -26,52 +26,10 @@ const HeroSection = () => {
           {/* Background Image */}
           <div className="relative">
             <img
-              src="https://images.pexels.com/photos/681335/pexels-photo-681335.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              src={hero}
               alt="Cityscape"
-              className="w-full h-[200px] sm:h-[300px] md:h-[400px] object-cover rounded-3xl"
+              className="w-[680px] h-[420px] sm:h-[500px] md:h-[600px] mt-12"
             />
-            {/* Overlay Elements */}
-            <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-10 md:right-10 bg-white p-2 sm:p-3 md:p-4 rounded-lg shadow-lg">
-              <svg
-                className="w-6 h-6 sm:w-8 sm:h-8 text-green-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M16 8v8m-4-4h8"
-                />
-              </svg>
-            </div>
-          <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-10 md:left-10 bg-white p-2 sm:p-3 md:p-4 rounded-lg shadow-lg">
-              <svg
-                className="w-6 h-6 sm:w-8 sm:h-8 text-green-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 3h18v18H3z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 12h18M12 3v18"
-                />
-              </svg>
-            </div>
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 bg-white px-4 py-1 sm:px-6 sm:py-2 rounded-t-lg shadow-lg">
-              <p className="text-gray-600 text-xs sm:text-sm md:text-base font-grotesk">Hassle free Life</p>
-            </div>
           </div>
         </div>
       </div>

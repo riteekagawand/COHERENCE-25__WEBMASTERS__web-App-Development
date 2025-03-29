@@ -5,6 +5,8 @@ import cors from "cors";
 import user from "./routes/user.route.js";
 import weatherRoutes from "./routes/weather.route.js";
 import locationRoutes from "./routes/location.route.js"
+import trafficRoutes from "./routes/trafficRoute.js"
+import utilityRoutes from "./routes/utilityRoute.js"
 
 dotenv.config();
 const app = express();
@@ -20,6 +22,8 @@ const API_KEY = process.env.OPENWEATHER_API_KEY;
 app.use("/api/user", user);
 app.use("/api", weatherRoutes);
 app.use("/api", locationRoutes);
+app.use('/api/traffic', trafficRoutes);
+app.use('/api/utilities', utilityRoutes);
 
 
 // ✅ MongoDB Connection (Updated)

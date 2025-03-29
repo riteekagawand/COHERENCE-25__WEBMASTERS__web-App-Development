@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Chart from 'react-apexcharts';
-import cityData from '../assets/cityData.json'; // Only used for WQI and weather
-import Sidebar from '@/components/Sidebar';
+import cityData from '../assets/cityData.json';
+import Cta from '@/assets/calltoaction.svg'
+import Sidebar from '../components/Sidebar';
+
 
 const Dashboard = () => {
   const [aqi, setAqi] = useState(null);
@@ -495,12 +497,16 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#d1ebc9] flex">
-      <div className="w-64 bg-white shadow-lg h-screen fixed top-0 left-0">
-        <Sidebar />
-      </div>
-
       <div className="flex-1 ml-64 p-4">
-        <div className="w-full max-w-md mb-4">
+      <Sidebar />
+      <div className="flex-1 p-4">
+  {/* Place the SVG here */}
+  <div className="mb-4">
+    <img src={Cta} alt="Description" className="w-full h-48 rounded-2xl" />
+  </div>
+</div>
+
+        <div className="w-full max-w-md mb-4 ml-5">
           <label htmlFor="city-select" className="block text-lg font-medium text-gray-700 mb-2">
             Select City (Overrides Geolocation):
           </label>
@@ -898,6 +904,7 @@ const Dashboard = () => {
                 <p className="text-center text-red-500 text-base">Unable to fetch traffic data</p>
               )}
             </div>
+            
             <div className="col-span-2"></div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaBars, FaTimes, FaNewspaper } from 'react-icons/fa';
+import { FaHome, FaBars, FaTimes, FaNewspaper} from 'react-icons/fa';
 import  logo  from '../assets/Logo.png'
 
 const Sidebar = () => {
@@ -23,36 +23,63 @@ const Sidebar = () => {
       {/* Logo */}
       <div className="flex justify-center items-center my-6">
         <Link to="/">
-          <img
-            src={logo} // Replace with your logo path
-            alt={logo}
-            className="w-32 h-auto" // Adjust the size as needed
-          />
+        <img
+          src={logo} // Replace with your logo path
+          alt={logo}
+          className="w-32 h-auto" // Adjust the size as needed
+        />
         </Link>
         
       </div>
 
       {/* Menu Items */}
       <div className="flex flex-1  flex-col items-start px-4 py-6 mt-[30px]">
+      <Link
+            to="/dashboard"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/dashboard') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+            <FaBars className="text-2xl" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Dashboard</span>
+          </Link>
+          <Link
+            to="/maps"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/maps') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+            <FaHome className="text-2xl" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Routes</span>
+          </Link>
         <Link
-          to="/dashboard"
-          className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${isActive('/dashboard') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'} ${isOpen ? 'justify-start pl-4' : 'justify-center'}`}
-        >
-          <FaNewspaper className="text-2xl" />
-          <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} font-grotesk md:block text-lg`}>
-            Dashboard
-          </span>
-        </Link>
+            to="/carbon-footprint"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/carbon-footprint') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+            <FaHome className="text-2xl" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Carbon Footprint</span>
+          </Link>
+          <Link
+            to="/energy-dashboard"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/energy-dashboard') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+            <FaHome className="text-2xl" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Energy Dashboard</span>
+          </Link>
+        <Link
+            to="/news"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/news') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
 
-        <Link
-          to="/news"
-          className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${isActive('/news') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'} ${isOpen ? 'justify-start pl-4' : 'justify-center'}`}
-        >
-          <FaNewspaper className="text-2xl " />
-          <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} font-grotesk md:block text-lg`}>
-            Local News
-          </span>
-        </Link>
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+             <FaNewspaper className="text-lg size-6" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Local News</span>
+          </Link>
       </div>
     </div>
   );

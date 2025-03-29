@@ -1,0 +1,16 @@
+.custom-icon svg {
+    width: 24px; /* Matches text-2xl */
+    height: 24px;
+  }
+  .custom-icon .text-red-500 {
+    fill: #ef4444; /* Tailwind's red-500 */
+  }
+  .custom-icon .text-green-500 {
+    fill: #10b981; /* Tailwind's green-500 */
+  }
+  .custom-icon .text-blue-500 {
+    fill: #3b82f6; /* Tailwind's blue-500 */
+  }
+  .custom-icon .text-orange-500 {
+    fill: #f97316; /* Tailwind's orange-500, for fire station if using FaFireExtinguisher */
+  }

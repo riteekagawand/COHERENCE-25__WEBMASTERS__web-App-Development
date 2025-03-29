@@ -10,13 +10,15 @@ import { Toaster } from "sonner";
 import Navbar from './home/Navbar';
 import Home from './home/Landing';
 import AddDetailForm from './home/AddDetails';
+import CarbonFootprintCalculator from './dashboard/CarbonFootPrints';
+import Maps from './dashboard/Map';
+import Energy from './dashboard/EnergyDashboard'
 
 function App() {
   return (
     <Router>
       <GoogleTranslate />
       <Toaster />
-      <Navbar />
       <Routes>
         <Route 
           path="/login" 
@@ -64,6 +66,30 @@ function App() {
             <NonAuthenticatedRoute> 
               <Location /> 
             </NonAuthenticatedRoute>
+          } 
+        />
+        <Route 
+          path="/carbon-footprint" 
+          element={
+          <AuthenticatedRoute> 
+            <CarbonFootprintCalculator />
+          </AuthenticatedRoute> 
+          } 
+        />
+        <Route 
+          path="/energy-dashboard" 
+          element={
+          <AuthenticatedRoute> 
+            <Energy />
+          </AuthenticatedRoute> 
+          } 
+        />
+        <Route 
+          path="/maps" 
+          element={
+          <AuthenticatedRoute>
+            <Maps />
+          </AuthenticatedRoute> 
           } 
         />
       </Routes>

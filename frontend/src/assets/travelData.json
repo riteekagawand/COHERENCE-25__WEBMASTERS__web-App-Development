@@ -1,0 +1,25 @@
+{
+    "travelData": {
+      "Virar": {
+        "Ahmedabad": { "distance": 480, "car": 480, "bus": 540, "train": 420, "bicycle": 1440, "walking": 5760, "airplane": 60, "boat": null, "ship": null, "helicopter": 90 },
+        "Bengaluru": { "distance": 980, "car": 1080, "bus": 1200, "train": 960, "bicycle": 2940, "walking": 11760, "airplane": 90, "boat": null, "ship": null, "helicopter": 150 },
+        "Chennai": { "distance": 1260, "car": 1440, "bus": 1560, "train": 1320, "bicycle": 3780, "walking": 15120, "airplane": 105, "boat": null, "ship": null, "helicopter": 180 },
+        "Coimbatore": { "distance": 1180, "car": 1320, "bus": 1440, "train": 1200, "bicycle": 3540, "walking": 14160, "airplane": 100, "boat": null, "ship": null, "helicopter": 170 },
+        "Delhi": { "distance": 1180, "car": 1440, "bus": 1560, "train": 1080, "bicycle": 3540, "walking": 14160, "airplane": 105, "boat": null, "ship": null, "helicopter": 180 },
+        "Ghaziabad": { "distance": 1200, "car": 1500, "bus": 1620, "train": 1140, "bicycle": 3600, "walking": 14400, "airplane": 110, "boat": null, "ship": null, "helicopter": 185 },
+        "Hyderabad": { "distance": 740, "car": 840, "bus": 960, "train": 780, "bicycle": 2220, "walking": 8880, "airplane": 75, "boat": null, "ship": null, "helicopter": 120 },
+        "Indore": { "distance": 560, "car": 660, "bus": 720, "train": 600, "bicycle": 1680, "walking": 6720, "airplane": 70, "boat": null, "ship": null, "helicopter": 100 },
+        "Jaipur": { "distance": 940, "car": 1080, "bus": 1200, "train": 960, "bicycle": 2820, "walking": 11280, "airplane": 90, "boat": null, "ship": null, "helicopter": 150 },
+        "Kanpur": { "distance": 1080, "car": 1320, "bus": 1440, "train": 1020, "bicycle": 3240, "walking": 12960, "airplane": 100, "boat": null, "ship": null, "helicopter": 165 },
+        "Kochi": { "distance": 1140, "car": 1320, "bus": 1440, "train": 1200, "bicycle": 3420, "walking": 13680, "airplane": 95, "boat": null, "ship": null, "helicopter": 165 },
+        "Kolkata": { "distance": 1740, "car": 2040, "bus": 2160, "train": 1800, "bicycle": 5220, "walking": 20880, "airplane": 135, "boat": null, "ship": null, "helicopter": 240 },
+        "Kozhikode": { "distance": 980, "car": 1140, "bus": 1260, "train": 1080, "bicycle": 2940, "walking": 11760, "airplane": 90, "boat": null, "ship": null, "helicopter": 150 },
+        "Lucknow": { "distance": 1140, "car": 1380, "bus": 1500, "train": 1080, "bicycle": 3420, "walking": 13680, "airplane": 105, "boat": null, "ship": null, "helicopter": 175 },
+        "Mumbai": { "distance": 50, "car": 60, "bus": 90, "train": 45, "bicycle": 150, "walking": 600, "airplane": null, "boat": 120, "ship": 180, "helicopter": 20 },
+        "Nagpur": { "distance": 820, "car": 960, "bus": 1080, "train": 840, "bicycle": 2460, "walking": 9840, "airplane": 80, "boat": null, "ship": null, "helicopter": 130 },
+        "Patna": { "distance": 1460, "car": 1740, "bus": 1860, "train": 1440, "bicycle": 4380, "walking": 17520, "airplane": 120, "boat": null, "ship": null, "helicopter": 210 },
+        "Pune": { "distance": 140, "car": 180, "bus": 240, "train": 150, "bicycle": 420, "walking": 1680, "airplane": 45, "boat": null, "ship": null, "helicopter": 30 },
+        "Surat": { "distance": 230, "car": 240, "bus": 300, "train": 180, "bicycle": 690, "walking": 2760, "airplane": 50, "boat": null, "ship": null, "helicopter": 60 }
+      }
+    }
+  }
