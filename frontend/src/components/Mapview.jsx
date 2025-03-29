@@ -5,7 +5,7 @@ import MapUpdater from './MapUpdater';
 import RouteSummary from './RouteSummary';
 import { getRoutes, getUtilities } from '../api/api';
 import { getIconForUtility } from '../utils/icons';
-import { cities, getCategoryForUtility } from '../utils/constants';
+import { cities } from '../utils/constants';
 
 const MapView = () => {
   const [mapCenter, setMapCenter] = useState([28.7041, 77.1025]); // Default: Delhi
@@ -20,31 +20,47 @@ const MapView = () => {
   const [optimalRouteIndex, setOptimalRouteIndex] = useState(-1);
   const [startCoords, setStartCoords] = useState(null);
   const [endCoords, setEndCoords] = useState(null);
+  const [useLiveLocation, setUseLiveLocation] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
 
-  // Fetch utility locations
+  // Map utility types to TomTom categories
   const utilityToCategory = {
     hospitals: 'hospital',
     medical_stores: 'pharmacy',
     fire_stations: 'fire station',
-    ev_charging: 'charging station'
+    ev_charging: 'charging station',
+    police_stations: 'police station' // Added police stations
   };
 
+  // Fetch utility locations (city-based or live location)
   useEffect(() => {
     const fetchUtilityLocations = async () => {
       if (!utilityType) {
         setMarkers([]);
         return;
       }
-      const selected = cities.find((city) => city.name === selectedCity);
-      if (!selected) return;
-      const category = utilityToCategory[utilityType] || utilityType; // Map to TomTom category
+
       setLoading(true);
       setError(null);
+
       try {
-        const utilities = await getUtilities(category, selected.lat, selected.lng);
+        let lat, lng;
+        if (useLiveLocation && userLocation) {
+          lat = userLocation.lat;
+          lng = userLocation.lng;
+          setMapCenter([lat, lng]);
+        } else {
+          const selected = cities.find((city) => city.name === selectedCity);
+          if (!selected) return;
+          lat = selected.lat;
+          lng = selected.lng;
+        }
+
+        const category = utilityToCategory[utilityType] || utilityType;
+        const utilities = await getUtilities(category, lat, lng);
         setMarkers(utilities);
       } catch (error) {
-        console.error(`Error fetching ${utilityType} in ${selectedCity}:`, error);
+        console.error(`Error fetching ${utilityType}${useLiveLocation ? ' near me' : ` in ${selectedCity}`}:`, error);
         setError(error.response?.status === 429 ? 'Rate limit exceeded.' : 'Failed to load data.');
         setMarkers([]);
       } finally {
@@ -52,7 +68,35 @@ const MapView = () => {
       }
     };
     fetchUtilityLocations();
-  }, [selectedCity, utilityType]);
+  }, [selectedCity, utilityType, useLiveLocation, userLocation]);
+
+  // Get user's live location
+  const handleGetLiveLocation = () => {
+    if (navigator.geolocation) {
+      setLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          setUseLiveLocation(true);
+          setSelectedCity('');
+          setRoutes([]);
+          setStartPlace('');
+          setEndPlace('');
+          setStartCoords(null);
+          setEndCoords(null);
+          setLoading(false);
+        },
+        (err) => {
+          setError('Failed to get live location. Please allow location access.');
+          setLoading(false);
+          console.error('Geolocation error:', err);
+        }
+      );
+    } else {
+      setError('Geolocation is not supported by your browser.');
+    }
+  };
 
   const fetchRoutes = async () => {
     if (!startPlace || !endPlace) {
@@ -65,9 +109,11 @@ const MapView = () => {
 
     try {
       const selected = cities.find((city) => city.name === selectedCity);
-      if (!selected) throw new Error('Selected city not found');
+      if (!selected && !useLiveLocation) throw new Error('Selected city not found');
+      const lat = useLiveLocation && userLocation ? userLocation.lat : selected.lat;
+      const lng = useLiveLocation && userLocation ? userLocation.lng : selected.lng;
 
-      const data = await getRoutes(startPlace, endPlace, selected.lat, selected.lng);
+      const data = await getRoutes(startPlace, endPlace, lat, lng);
       setRoutes(data.routes);
       setOptimalRouteIndex(data.optimalRouteIndex);
       setStartCoords(data.startCoords);
@@ -87,6 +133,7 @@ const MapView = () => {
   const handleCityChange = (e) => {
     const cityName = e.target.value;
     setSelectedCity(cityName);
+    setUseLiveLocation(false);
     const selected = cities.find((city) => city.name === cityName);
     if (selected) {
       setMapCenter([selected.lat, selected.lng]);
@@ -122,7 +169,9 @@ const MapView = () => {
             value={selectedCity}
             onChange={handleCityChange}
             className="w-full sm:w-auto p-2 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            disabled={useLiveLocation}
           >
+            <option value="">Select City</option>
             {cities.map((city) => (
               <option key={city.name} value={city.name}>{city.name}</option>
             ))}
@@ -137,7 +186,14 @@ const MapView = () => {
             <option value="medical_stores">Medical Stores</option>
             <option value="fire_stations">Fire Stations</option>
             <option value="ev_charging">EV Charging Stations</option>
+            <option value="police_stations">Police Stations</option> {/* Added police stations */}
           </select>
+          <button
+            onClick={handleGetLiveLocation}
+            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          >
+            Use My Location
+          </button>
         </div>
 
         {/* Route Input Form */}
@@ -146,14 +202,14 @@ const MapView = () => {
             type="text"
             value={startPlace}
             onChange={(e) => setStartPlace(e.target.value)}
-            placeholder={`Start place in ${selectedCity} (e.g., India Gate)`}
+            placeholder={useLiveLocation ? 'Start place near me' : `Start place in ${selectedCity} (e.g., India Gate)`}
             className="w-full sm:w-auto p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="text"
             value={endPlace}
             onChange={(e) => setEndPlace(e.target.value)}
-            placeholder={`End place in ${selectedCity} (e.g., Connaught Place)`}
+            placeholder={useLiveLocation ? 'End place near me' : `End place in ${selectedCity} (e.g., Connaught Place)`}
             className="w-full sm:w-auto p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
