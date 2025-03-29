@@ -5,8 +5,82 @@
     <link rel="icon" type="image/svg+xml" href="/vite.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartGrid</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #f4f4f4;
+      }
+  
+      .chatbot-popup {
+          position: fixed;
+          bottom: 20px;
+          left: 20px;
+          width: 400px;
+          height: 600px;
+          border: none;
+          border-radius: 10px;
+          box-shadow: 0 4px 20px #d1ebc9;
+          display: none;
+          z-index: 9999;
+          transition: transform 0.3s ease-in-out;
+          background-color: #d1ebc9;
+      }
+  
+      .chatbot-toggle {
+          position: fixed;
+          bottom: 20px;
+          left: 20px;
+          background: linear-gradient(135deg, #556B2F, #6B8E23);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          width: 60px;
+          height: 60px;
+          box-shadow: 0 4px 15px rgba(85, 107, 47, 0.5);
+          cursor: pointer;
+          z-index: 10000;
+          transition: background 0.3s, transform 0.3s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+  
+      .chatbot-toggle:hover {
+          background: linear-gradient(135deg, #6B8E23, #8FBC8F);
+          transform: scale(1.1);
+      }
+  
+      .chatbot-toggle:active {
+          transform: scale(0.9);
+      }
+  </style>
   </head>
   <body>
+    <iframe 
+      id="chatbot" 
+      class="chatbot-popup" 
+      src="https://cdn.botpress.cloud/webchat/v2.2/shareable.html?configUrl=https://files.bpcontent.cloud/2025/03/28/04/20250328042619-JDSKL13L.json">
+    </iframe>
+
+    <button class="chatbot-toggle" onclick="toggleChatbot()">
+      <span style="font-size: 24px;">😎</span>
+    </button>
+
+    <script>
+      function toggleChatbot() {
+          const chatbot = document.getElementById('chatbot');
+          if (chatbot.style.display === 'none' || chatbot.style.display === '') {
+              chatbot.style.display = 'block';
+              chatbot.style.transform = 'translateY(0)';
+          } else {
+              chatbot.style.transform = 'translateY(100%)';
+              setTimeout(() => { chatbot.style.display = 'none'; }, 300);
+          }
+      }
+    </script>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

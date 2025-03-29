@@ -8,6 +8,7 @@ import Location from './components/ALerts';
 import { Toaster } from "sonner";
 import Home from './home/Landing';
 import CarbonFootprintCalculator from './dashboard/CarbonFootprint';
+import EnergyDashboard from './dashboard/EnergyDashboard'; 
 // import Navbar from './home/Navbar';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         <Route path="/location" element={<Location />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/carbon-footprint" element={<CarbonFootprintCalculator />} />
+        <Route path="/energy-dashboard" element={<EnergyDashboard />} />
 
         </Routes>
     </Router>

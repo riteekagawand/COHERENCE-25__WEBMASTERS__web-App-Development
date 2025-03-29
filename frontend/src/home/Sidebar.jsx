@@ -59,7 +59,18 @@ const Sidebar = () => {
             <FaHome className="text-2xl" />
             <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Dashboard</span>
           </Link>
-         
+
+          <div className="flex flex-1 flex-col items-start px-4 py-20">
+          <Link
+            to="/energy-dashboard"
+            className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
+              isActive('/energy-dashboard') ? 'bg-blue-100 font-medium text-gray-600' : 'text-gray-100 font-medium hover:text-gray-600 hover:bg-[#d1ebc9]'
+            } ${isOpen ? 'justify-start pl-4' : 'justify-center'} md:justify-start md:pl-4`}
+          >
+            <FaHome className="text-2xl" />
+            <span className={`ml-3 ${isOpen ? 'block' : 'hidden'} md:block text-lg`}>Energy Analysis</span>
+          </Link>
+
           <Link
             to="/carbon-footprint"
             className={`flex items-center w-full py-2 my-1 rounded-lg transition-colors ${
@@ -83,6 +94,7 @@ const Sidebar = () => {
         
         </div>
       </div>
+    </div>
     </div>
   );
 };
