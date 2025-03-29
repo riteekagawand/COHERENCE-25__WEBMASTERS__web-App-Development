@@ -1,26 +1,28 @@
 import L from 'leaflet';
 
 export const hospitalIcon = L.divIcon({
-  html: '<i class="fas fa-hospital text-red-500 text-2xl"></i>',
+  html: '<i class="fas fa-hospital text-blue-500 text-2xl"></i>',
   iconSize: [30, 30],
   className: 'custom-icon',
 });
 
 export const medicalStoreIcon = L.divIcon({
-  html: '<i class="fas fa-prescription-bottle-alt text-green-500 text-2xl"></i>',
+  html: '<i class="fas fa-first-aid text-teal-600 text-2xl"></i>',
   iconSize: [30, 30],
   className: 'custom-icon',
 });
 
-export const fireStationIcon = L.icon({
-  iconUrl: 'https://cdn-icons-png.flaticon.com/512/1442/1442915.png',
+
+
+export const fireStationIcon = L.divIcon({
+  html: '<i class="fas fa-fire-extinguisher text-red-900 text-2xl"></i>',
   iconSize: [30, 30],
-  iconAnchor: [15, 30],
-  popupAnchor: [0, -30],
+  className: 'custom-icon',
 });
 
+
 export const evChargingIcon = L.divIcon({
-  html: '<i class="fas fa-charging-station text-blue-500 text-2xl"></i>',
+  html: '<i class="fas fa-charging-station text-green-900 text-2xl"></i>',
   iconSize: [30, 30],
   className: 'custom-icon',
 });

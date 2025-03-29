@@ -7,7 +7,6 @@ import News from './dashboard/News';
 import GoogleTranslate from './components/GoogleTranslator';
 import Location from './components/ALerts';
 import { Toaster } from "sonner";
-import Navbar from './home/Navbar';
 import Home from './home/Landing';
 import AddDetailForm from './home/AddDetails';
 import CarbonFootprintCalculator from './dashboard/CarbonFootPrints';

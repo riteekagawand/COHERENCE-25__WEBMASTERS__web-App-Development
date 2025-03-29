@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import MapUpdater from './MapUpdater';
 import RouteSummary from './RouteSummary';
@@ -22,6 +22,7 @@ const MapView = () => {
   const [endCoords, setEndCoords] = useState(null);
   const [useLiveLocation, setUseLiveLocation] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
+  const [mapZoom, setMapZoom] = useState(12);
 
   // Map utility types to TomTom categories
   const utilityToCategory = {
@@ -29,7 +30,7 @@ const MapView = () => {
     medical_stores: 'pharmacy',
     fire_stations: 'fire station',
     ev_charging: 'charging station',
-    police_stations: 'police station' // Added police stations
+    police_stations: 'police station'
   };
 
   // Fetch utility locations (city-based or live location)
@@ -86,6 +87,7 @@ const MapView = () => {
           setStartCoords(null);
           setEndCoords(null);
           setLoading(false);
+          setMapZoom(14); // Zoom in closer when using live location
         },
         (err) => {
           setError('Failed to get live location. Please allow location access.');
@@ -119,6 +121,7 @@ const MapView = () => {
       setStartCoords(data.startCoords);
       setEndCoords(data.endCoords);
       setMapCenter(data.routes[data.optimalRouteIndex].coords[0]);
+      setMapZoom(13); // Adjust zoom to show the route better
     } catch (error) {
       console.error('Error fetching routes:', error);
       setError(error.response?.data?.error || 'Failed to fetch routes. Please try again.');
@@ -144,6 +147,7 @@ const MapView = () => {
       setEndPlace('');
       setStartCoords(null);
       setEndCoords(null);
+      setMapZoom(12);
     }
   };
 
@@ -157,120 +161,227 @@ const MapView = () => {
     fetchRoutes();
   };
 
-  const mapStyles = { height: '500px', width: '100%' };
+  const resetFilters = () => {
+    setUtilityType('');
+    setMarkers([]);
+    setRoutes([]);
+    setStartPlace('');
+    setEndPlace('');
+    setStartCoords(null);
+    setEndCoords(null);
+  };
+
+  const mapStyles = { height: '600px', width: '100%', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' };
   const currentIcon = getIconForUtility(utilityType);
 
   return (
-    <div className="p-4 md:p-6 ml-16 md:ml-64">
-      <div className="flex flex-col space-y-4 mb-6">
-        {/* City and Utility Selection */}
-        <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
-          <select
-            value={selectedCity}
-            onChange={handleCityChange}
-            className="w-full sm:w-auto p-2 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            disabled={useLiveLocation}
-          >
-            <option value="">Select City</option>
-            {cities.map((city) => (
-              <option key={city.name} value={city.name}>{city.name}</option>
-            ))}
-          </select>
-          <select
-            value={utilityType}
-            onChange={handleUtilityChange}
-            className="w-full sm:w-auto p-2 border rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select Utility</option>
-            <option value="hospitals">Hospitals</option>
-            <option value="medical_stores">Medical Stores</option>
-            <option value="fire_stations">Fire Stations</option>
-            <option value="ev_charging">EV Charging Stations</option>
-            <option value="police_stations">Police Stations</option> {/* Added police stations */}
-          </select>
-          <button
-            onClick={handleGetLiveLocation}
-            className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          >
-            Use My Location
-          </button>
+    <div className="p-6 ml-16 md:ml-64" style={{ backgroundColor: '#D1EBC9', minHeight: '100vh' }}>
+
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-6">Urban Navigation & Utilities</h1>
+          
+          {/* Control Panel */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* Location Selection */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-gray-700">Location</h2>
+              <div className="flex flex-wrap gap-3">
+                <select
+                  value={selectedCity}
+                  onChange={handleCityChange}
+                  className="flex-grow p-2.5 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={useLiveLocation}
+                >
+                  <option value="">Select City</option>
+                  {cities.map((city) => (
+                    <option key={city.name} value={city.name}>{city.name}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleGetLiveLocation}
+                  className="p-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 shadow-sm flex items-center justify-center"
+                  disabled={loading}
+                >
+                  <svg className="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  Use My Location
+                </button>
+              </div>
+              
+              {/* Utility Selection */}
+              <div>
+                <h2 className="text-lg font-semibold text-gray-700">Services</h2>
+                <div className="flex flex-wrap gap-3">
+                  <select
+                    value={utilityType}
+                    onChange={handleUtilityChange}
+                    className="flex-grow p-2.5 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Select Service Type</option>
+                    <option value="hospitals">Hospitals</option>
+                    <option value="medical_stores">Medical Stores</option>
+                    <option value="fire_stations">Fire Stations</option>
+                    <option value="ev_charging">EV Charging Stations</option>
+                    <option value="police_stations">Police Stations</option>
+                  </select>
+                  <button
+                    onClick={resetFilters}
+                    className="p-2.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 shadow-sm"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {/* Route Planning */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-gray-700">Route Planning</h2>
+              <form onSubmit={handleRouteSubmit} className="space-y-3">
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex-grow relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <div className="w-5 h-5 bg-blue-500 rounded-full"></div>
+                    </div>
+                    <input
+                      type="text"
+                      value={startPlace}
+                      onChange={(e) => setStartPlace(e.target.value)}
+                      placeholder={useLiveLocation ? 'Start place near me' : `Start place in ${selectedCity || 'selected city'}`}
+                      className="w-full pl-10 p-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <div className="flex-grow relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <div className="w-5 h-5 bg-red-500 rounded-full"></div>
+                    </div>
+                    <input
+                      type="text"
+                      value={endPlace}
+                      onChange={(e) => setEndPlace(e.target.value)}
+                      placeholder={useLiveLocation ? 'End place near me' : `End place in ${selectedCity || 'selected city'}`}
+                      className="w-full pl-10 p-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full p-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-sm flex items-center justify-center"
+                  disabled={loading}
+                >
+                  <svg className="w-5 h-5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                  </svg>
+                  Find Routes
+                </button>
+              </form>
+            </div>
+          </div>
+          
+          {/* Status Messages */}
+          {loading && (
+            <div className="flex justify-center items-center p-4 mb-6 bg-blue-50 rounded-lg">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-700 mr-3"></div>
+              <p className="text-blue-700">Loading data...</p>
+            </div>
+          )}
+          
+          {error && (
+            <div className="p-4 mb-6 bg-red-50 rounded-lg flex items-start">
+              <svg className="w-5 h-5 text-red-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <p className="text-red-700">{error}</p>
+            </div>
+          )}
         </div>
 
-        {/* Route Input Form */}
-        <form onSubmit={handleRouteSubmit} className="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
-          <input
-            type="text"
-            value={startPlace}
-            onChange={(e) => setStartPlace(e.target.value)}
-            placeholder={useLiveLocation ? 'Start place near me' : `Start place in ${selectedCity} (e.g., India Gate)`}
-            className="w-full sm:w-auto p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="text"
-            value={endPlace}
-            onChange={(e) => setEndPlace(e.target.value)}
-            placeholder={useLiveLocation ? 'End place near me' : `End place in ${selectedCity} (e.g., Connaught Place)`}
-            className="w-full sm:w-auto p-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-          >
-            Get Routes
-          </button>
-        </form>
+        {/* Map Container */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <MapContainer center={mapCenter} zoom={mapZoom} style={mapStyles} zoomControl={false}>
+            <MapUpdater center={mapCenter} zoom={mapZoom} />
+            <ZoomControl position="bottomright" />
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {/* Utility Markers */}
+            {markers.map((marker, index) => (
+              <Marker key={index} position={[marker.lat, marker.lng]} icon={currentIcon}>
+                <Popup>
+                  <div className="text-center">
+                    <h3 className="font-semibold">{marker.name}</h3>
+                    {marker.address && <p className="text-sm text-gray-600">{marker.address}</p>}
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+            {/* Start and End Markers */}
+            {startCoords && (
+              <Marker position={startCoords}>
+                <Popup>
+                  <div className="text-center">
+                    <h3 className="font-semibold">Start</h3>
+                    <p>{startPlace}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            )}
+            {endCoords && (
+              <Marker position={endCoords}>
+                <Popup>
+                  <div className="text-center">
+                    <h3 className="font-semibold">Destination</h3>
+                    <p>{endPlace}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            )}
+            {/* Routes */}
+            {routes.map((route, index) => (
+              <Polyline
+                key={index}
+                positions={route.coords}
+                color={route.color || (index === optimalRouteIndex ? '#2563eb' : '#6b7280')}
+                weight={index === optimalRouteIndex ? 6 : 3}
+                opacity={index === optimalRouteIndex ? 0.9 : 0.7}
+                dashArray={route.isAnomaly ? '5, 10' : ''}
+              >
+                <Popup>
+                  <div className="text-center">
+                    <h3 className="font-semibold">{index === optimalRouteIndex ? 'Optimal Route' : `Route ${index + 1}`}</h3>
+                    <p className="mb-1">Travel time: {Math.round(route.travelTime / 60)} min</p>
+                    {route.currentDelay > 0 && (
+                      <p className="text-amber-600">Current delay: {Math.round(route.currentDelay / 60)} min</p>
+                    )}
+                    {route.predictedDelay > 0 && (
+                      <p className="text-orange-600">Predicted delay: {Math.round(route.predictedDelay / 60)} min</p>
+                    )}
+                    {route.incidentDescription !== 'No incidents' && (
+                      <p className="text-red-600 mt-1">{route.incidentDescription}</p>
+                    )}
+                    {route.isAnomaly && (
+                      <p className="text-purple-600 mt-1">Possible anomaly - Check for live events</p>
+                    )}
+                  </div>
+                </Popup>
+              </Polyline>
+            ))}
+          </MapContainer>
+        </div>
+
+        {/* Route Summary */}
+        {routes.length > 0 && (
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <RouteSummary routes={routes} optimalRouteIndex={optimalRouteIndex} />
+          </div>
+        )}
       </div>
-
-      {loading && <div className="text-center"><p>Loading...</p></div>}
-      {error && <div className="text-center text-red-500"><p>{error}</p></div>}
-
-      <MapContainer center={mapCenter} zoom={12} style={mapStyles}>
-        <MapUpdater center={mapCenter} />
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        {/* Utility Markers */}
-        {markers.map((marker, index) => (
-          <Marker key={index} position={[marker.lat, marker.lng]} icon={currentIcon}>
-            <Popup>{marker.name}</Popup>
-          </Marker>
-        ))}
-        {/* Start and End Markers */}
-        {startCoords && (
-          <Marker position={startCoords}>
-            <Popup>Start: {startPlace}</Popup>
-          </Marker>
-        )}
-        {endCoords && (
-          <Marker position={endCoords}>
-            <Popup>End: {endPlace}</Popup>
-          </Marker>
-        )}
-        {/* Routes */}
-        {routes.map((route, index) => (
-          <Polyline
-            key={index}
-            positions={route.coords}
-            color={route.color}
-            weight={index === optimalRouteIndex ? 5 : 3}
-            opacity={0.8}
-          >
-            <Popup>
-              Route {index + 1}: {Math.round(route.travelTime / 60)} min
-              {route.currentDelay > 0 && ` (Current Delay: ${Math.round(route.currentDelay / 60)} min)`}
-              {route.predictedDelay > 0 && ` (Predicted Delay: ${Math.round(route.predictedDelay / 60)} min)`}
-              {route.incidentDescription !== 'No incidents' && ` (Incident: ${route.incidentDescription})`}
-              {route.isAnomaly && ' (Possible Anomaly - Check for Live Events)'}
-              {index === optimalRouteIndex && ' - Optimal Route'}
-            </Popup>
-          </Polyline>
-        ))}
-      </MapContainer>
-
-      {routes.length > 0 && (
-        <RouteSummary routes={routes} optimalRouteIndex={optimalRouteIndex} />
-      )}
     </div>
   );
 };

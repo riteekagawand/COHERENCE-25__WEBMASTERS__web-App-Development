@@ -32,7 +32,7 @@ const startServer = async () => {
     await mongoose.connect(process.env.MONGO_URI); // ✅ Removed Deprecated Options
     console.log("✅ Connected to MongoDB");
 
-    const PORT = process.env.PORT || 5000; // ✅ Default Port
+    const PORT = process.env.PORT || 4000; // ✅ Default Port
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
