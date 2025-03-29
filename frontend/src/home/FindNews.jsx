@@ -51,7 +51,7 @@ const News = () => {
     const { className, onClick } = props;
     return (
       <button
-        className={`${className} slick-next font-grotesk !w-10 !h-10 sm:!w-12 sm:!h-12 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors !right-0 sm:!right-[-50px]`}
+        className={`${className} slick-next font-grotesk w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-200 rounded-full hover:bg-gray-300 transition-colors absolute right-1 sm:right-4 md:right-5 z-1`}
         onClick={onClick}
       >
         <svg
@@ -65,12 +65,13 @@ const News = () => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
-            d="M9 5l7 7-7 7"
+            d="M15 19l-7-7 7-7"
           />
         </svg>
       </button>
     );
   };
+  
 
   const settings = {
     dots: true,

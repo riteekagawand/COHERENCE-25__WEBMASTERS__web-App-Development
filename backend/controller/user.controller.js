@@ -162,5 +162,54 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+export const adduserdetail = async (req, res) => {
+  try {
+    const {
+      phoneno,
+      gender,
+      dateofbirth,
+      address,
+    } = req.body;
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.phoneno = phoneno;
+    user.gender = gender;
+    user.dateofbirth = dateofbirth;
+    user.address = address;
+
+    const userdetails = {
+      phoneno: user.phoneno,
+      email: user.email,
+      fullName: user.fullName,
+      photo: user.photo,
+      _id: user._id,
+    };
+
+    await user.save();
+
+    res
+      .status(200)
+      .json({ message: "Your details added successfully", user: userdetails });
+  } catch (error) {
+    console.error("Error adding extra data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getuserbyid = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error getting user by id:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 export default router;

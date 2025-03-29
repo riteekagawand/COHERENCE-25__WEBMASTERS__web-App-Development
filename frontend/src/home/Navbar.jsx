@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { HashLink } from 'react-router-hash-link'; // Import HashLink
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil'; // ✅ Import useRecoilValue
+import { loggedInState } from '../state/authState'; // ✅ Import loggedInState
+import { Button } from '@/components/ui/button'; // ✅ Ensure correct import
+import logo from '../assets/logo-dark.png';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrollingDirection, setScrollingDirection] = useState('up'); // Tracking scroll direction
   const [prevScrollPos, setPrevScrollPos] = useState(0); // Previous scroll position
+  const isLoggedIn = useRecoilValue(loggedInState); // ✅ Using Recoil state
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -14,22 +20,11 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollPos = window.pageYOffset;
-
-      // Check if the user is scrolling up or down
-      if (currentScrollPos > prevScrollPos) {
-        setScrollingDirection('down'); // Scrolling down
-      } else {
-        setScrollingDirection('up'); // Scrolling up
-      }
-
-      // Update the previous scroll position
+      setScrollingDirection(currentScrollPos > prevScrollPos ? 'down' : 'up');
       setPrevScrollPos(currentScrollPos);
     };
 
-    // Attach the scroll event listener
     window.addEventListener('scroll', handleScroll);
-
-    // Cleanup event listener on unmount
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -42,8 +37,10 @@ const Navbar = () => {
       }`}
     >
       <nav className="container mx-auto flex justify-between items-center py-4 px-4 sm:px-6">
-        {/* Logo (Optional) */}
-        <div className="text-xl font-bold text-gray-900">Logo</div>
+        {/* Logo */}
+        <Link to="/">
+          <img src={logo} alt="logo" className="w-56 h-auto ml-3" />
+        </Link>
 
         {/* Hamburger Menu for Mobile */}
         <div className="sm:hidden">
@@ -71,36 +68,27 @@ const Navbar = () => {
             isOpen ? 'flex' : 'hidden'
           } sm:flex flex-col sm:flex-row gap-4 sm:gap-6 items-center absolute sm:static top-16 left-0 w-full sm:w-auto bg-white/90 sm:bg-transparent p-4 sm:p-0 shadow-sm sm:shadow-none transition-all duration-300`}
         >
-          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">
-            <HashLink to="#home" className="hover:text-gray-600">
-              Home
-            </HashLink>
-          </li>
-          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">
-            <HashLink to="#usp" className="hover:text-gray-600">
-              About
-            </HashLink>
-          </li>
-          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">
-            <HashLink to="#news-updates" className="hover:text-gray-600">
-              News & Updates
-            </HashLink>
-          </li>
-          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">
-            <HashLink to="#inovations" className="hover:text-gray-600">
-              Inovations
-            </HashLink>
-          </li>
-          <li className="text-gray-700 hover:text-black cursor-pointer text-sm sm:text-base">
-            <HashLink to="#traffic" className="hover:text-gray-600">
-              Traffic Data
-            </HashLink>
-          </li>
-          <li>
-            <Link to='/login' className="bg-black text-white px-3 py-1 sm:px-4 sm:py-2 rounded-md hover:bg-gray-800 text-sm sm:text-base">
-              Login/Sign Up
-            </Link>
-          </li>
+          <li><HashLink to="#home" className="text-gray-700 hover:text-black">Home</HashLink></li>
+          <li><HashLink to="#usp" className="text-gray-700 hover:text-black">About</HashLink></li>
+          <li><HashLink to="#news-updates" className="text-gray-700 hover:text-black">News & Updates</HashLink></li>
+          <li><HashLink to="#inovations" className="text-gray-700 hover:text-black">Innovations</HashLink></li>
+          <li><HashLink to="#traffic" className="text-gray-700 hover:text-black">Traffic Data</HashLink></li>
+          
+          {!isLoggedIn && (
+            <Button size="lg" onClick={() => navigate("/login")} className='text-lg bg-[#36512e] w-62 hover:bg-[#36512e] text-white px-6 rounded-md py-2 font-semibold'>
+              Login / Signup
+            </Button>
+          )}
+          {isLoggedIn && (
+            <Button size="lg" onClick={() => navigate("/dashboard")} className='text-lg w-full px-6 rounded-md py-2'>
+              Dashboard
+            </Button>
+          )}
+          {isLoggedIn && (
+            <Button size="lg" variant="destructive" onClick={() => handleLogout()} className='text-lg w-full px-6 rounded-md py-2'>
+              Logout
+            </Button>
+          )}
         </ul>
       </nav>
     </header>

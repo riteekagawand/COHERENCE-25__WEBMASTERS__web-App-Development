@@ -23,13 +23,15 @@ const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState(""); // New state for user role
+  const [role, setRole] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("login");
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // New state to trigger redirect
+  const [redirectPath, setRedirectPath] = useState(null); // Store redirect path
   const navigate = useNavigate();
   const [timer, setTimer] = useState(300);
   const [timerRunning, setTimerRunning] = useState(false);
@@ -40,12 +42,10 @@ const UserLogin = () => {
     setShowPassword(!showPassword);
   };
 
-  const allowedDomain = ["@mscb.com", "@cpcb.com"]; // Specify the allowed email domain for admin role
+  const allowedDomain = ["@mscb.com", "@cpcb.com"];
 
-  // Function to validate email domain based on selected role
   const validateEmailDomain = (email) => {
     if (role === "admin") {
-      // Check if the email ends with either of the allowed domains
       const isValidDomain = allowedDomain.some((domain) => email.endsWith(domain));
       if (!isValidDomain) {
         toast.error("Invalid authority domain.");
@@ -54,7 +54,6 @@ const UserLogin = () => {
     }
     return true;
   };
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -62,32 +61,57 @@ const UserLogin = () => {
 
     if (!email || !password) {
       toast.error("All fields are required");
+      setLoading(false);
       return;
     }
 
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/user/login`,
-        {
-          email,
-          password,
-        }
+        { email, password }
       );
+
       if (res.status === 200) {
         toast.success(res.data.message);
-        setTokenState(res.data?.token);
-        localStorage.setItem("token", res.data?.token || "");
-        localStorage.setItem("user", JSON.stringify(res.data?.user));
-        navigate("/dashboard");
-      } else if (res.status === 400) {
-        toast.error("User already exists");
+        const token = res.data?.token;
+        const user = res.data?.user || {};
+
+        // Set authentication state
+        setTokenState(token);
+        localStorage.setItem("token", token || "");
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // Debugging logs
+        console.log("Full API Response:", res.data);
+        console.log("Token set:", token);
+        console.log("User:", user);
+        console.log("userDetailsIncomplete:", res.data.userDetailsIncomplete);
+
+        // Determine redirect path
+        const path = res.data.userDetailsIncomplete ? "/adduserdetail" : "/dashboard";
+        console.log("Redirecting to:", path);
+
+        // Set state to trigger redirect
+        setRedirectPath(path);
+        setIsAuthenticated(true);
+      } else {
+        toast.error("Unexpected response status: " + res.status);
       }
     } catch (err) {
-      toast.error("Invalid email or password");
+      toast.error(err.response?.data?.message || "Invalid email or password");
+      console.error("Login error:", err);
     } finally {
       setLoading(false);
     }
   };
+
+  // Handle redirect after state updates
+  useEffect(() => {
+    if (isAuthenticated && redirectPath) {
+      console.log("useEffect triggered - Navigating to:", redirectPath);
+      navigate(redirectPath, { replace: true });
+    }
+  }, [isAuthenticated, redirectPath, navigate]);
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -95,10 +119,10 @@ const UserLogin = () => {
 
     if (!fullName || !email || !password || !role) {
       toast.error("All fields are required");
+      setLoading(false);
       return;
     }
 
-    // Validate email domain based on role
     if (!validateEmailDomain(email)) {
       setLoading(false);
       return;
@@ -107,12 +131,7 @@ const UserLogin = () => {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/user/register`,
-        {
-          fullName,
-          email,
-          password,
-          role, // Send the selected role
-        }
+        { fullName, email, password, role }
       );
       if (res.status === 200) {
         setIsOtpSent(true);
@@ -122,7 +141,7 @@ const UserLogin = () => {
         toast.error("User already exists");
       }
     } catch (err) {
-      toast.error(err.response.data.message || "Server Error");
+      toast.error(err.response?.data?.message || "Server Error");
     } finally {
       setLoading(false);
     }
@@ -148,12 +167,7 @@ const UserLogin = () => {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/user/verify-otp`,
-        {
-          email,
-          enteredOTP: otp,
-          fullName,
-          password,
-        }
+        { email, enteredOTP: otp, fullName, password }
       );
       if (res.status === 200) {
         toast.success(res.data.message);
@@ -179,15 +193,16 @@ const UserLogin = () => {
       className="justify-center flex items-center flex-col bg-[#f9fafb] min-h-screen"
       onSubmit={(e) => {
         e.preventDefault();
-        const activeTab = document.querySelector("[data-state='active']").textContent;
-        if (activeTab === "Login") {
+        const activeTabElement = document.querySelector("[data-state='active']");
+        const activeTabText = activeTabElement?.textContent;
+        if (activeTabText === "Login") {
           handleLogin(e);
-        } else if (activeTab === "Sign Up") {
+        } else if (activeTabText === "Sign Up") {
           handleSignup(e);
         }
       }}
     >
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[400px] ">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[400px]">
         <TabsList className="grid w-full grid-cols-2 font-grotesk">
           <TabsTrigger value="login" className={activeTab === "login" ? "bg-[#72B944] text-white" : ""}>
             Login
@@ -248,7 +263,7 @@ const UserLogin = () => {
               <Button className="w-full bg-[#72B944] text-white font-grotesk" disabled={loading} type="submit">
                 {loading ? (
                   <div className="flex flex-row gap-2 items-center font-grotesk">
-                    <ImSpinner2 className="animate-spin text-white" /> Login you in
+                    <ImSpinner2 className="animate-spin text-white" /> Logging you in
                   </div>
                 ) : (
                   "Login"
@@ -273,7 +288,7 @@ const UserLogin = () => {
                 <Label htmlFor="role">Role</Label>
                 <select
                   id="role"
-                  className="inputField ml-10 bg-[#d1ebc9] text-black focus:outline-none focus:bg-2 focus:bg-[#d1ebc9] rounded-md"
+                  className="inputField ml-10 bg-[#d1ebc9] text-black focus:outline-none focus:bg-[#d1ebc9] rounded-md"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                   required
@@ -307,15 +322,16 @@ const UserLogin = () => {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="password">Create Password</Label>
-                <Input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter Password"
-                  required
-                />
-                {showPassword ? (
+                <div className="w-full relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter Password"
+                    required
+                  />
+                  {showPassword ? (
                     <FaEye
                       onClick={togglePasswordVisibility}
                       className="absolute right-2 top-3 cursor-pointer text-sm"
@@ -327,7 +343,8 @@ const UserLogin = () => {
                     />
                   )}
                 </div>
-                  {isOtpSent && (
+              </div>
+              {isOtpSent && (
                 <div className="space-y-1">
                   <Label htmlFor="otp">Enter OTP</Label>
                   <Input

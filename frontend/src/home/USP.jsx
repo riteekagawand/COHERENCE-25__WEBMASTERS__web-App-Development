@@ -80,11 +80,11 @@ const USP = () => {
     const { className, onClick } = props;
     return (
       <button
-        className={`${className} slick-next font-grotesk !w-10 !h-10 sm:!w-12 sm:!h-12 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition-colors !right-0 sm:!right-[-50px]`}
+        className={`${className} slick-next font-grotesk w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-700 rounded-full hover:bg-gray-600 transition-colors absolute right-2 sm:right-4 md:right-5 z-10`}
         onClick={onClick}
       >
         <svg
-          className="w-5 h-5 sm:w-6 sm:h-6 font-grotesk"
+          className="w-5 h-5 sm:w-6 sm:h-6"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -94,19 +94,20 @@ const USP = () => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
-            d="M9 5l7 7-7 7"
+            d="M15 19l-7-7 7-7"
           />
         </svg>
       </button>
     );
   };
+  
 
   return (
     <section id='usp' className=" py-8 sm:py-12 lg:py-16 bg-gray-900 text-white">
       <div className="container mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 sm:mb-10 lg:mb-12">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-grotesk font-bold tracking-tight mb-4 sm:mb-0">
-            What are our USP
+            What are our USP ??
           </h2>
           <button className="text-base sm:text-lg font-grotesk font-semibold flex items-center gap-2 hover:text-gray-300 transition-colors">
             View All
@@ -130,7 +131,7 @@ const USP = () => {
         <Slider {...settings} prevArrow={<CustomPrevArrow />} nextArrow={<CustomNextArrow />}>
           {properties.map((property, index) => (
             <div key={index} className="px-2">
-              <div className="relative group font-grotesk bg-gray-800 rounded-xl  overflow-hidden shadow-lg transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+              <div className="relative group font-grotesk bg-gray-800 rounded-sm  overflow-hidden shadow-lg transform transition-all duration-300 hover:-translate-y-2 hover:shadow-sm">
                 <div className="relative">
                   <img
                     src={property.img}

@@ -22,11 +22,14 @@ const Sidebar = () => {
 
       {/* Logo */}
       <div className="flex justify-center items-center my-6">
-        <img
-          src={logo} // Replace with your logo path
-          alt={logo}
-          className="w-32 h-auto" // Adjust the size as needed
-        />
+        <Link to="/">
+          <img
+            src={logo} // Replace with your logo path
+            alt={logo}
+            className="w-32 h-auto" // Adjust the size as needed
+          />
+        </Link>
+        
       </div>
 
       {/* Menu Items */}

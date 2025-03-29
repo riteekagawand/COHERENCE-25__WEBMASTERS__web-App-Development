@@ -1,17 +1,23 @@
-import { loggedInState } from "@/store/auth";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// routes/AuthenticatedRoute.jsx
+import { Navigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
+import { tokenState } from "@/store/auth";
 
 const AuthenticatedRoute = ({ children }) => {
-    const isLoggedIn = useRecoilValue(loggedInState);
-    const navigate = useNavigate();
+  const token = useRecoilValue(tokenState);
+  const localToken = localStorage.getItem("token");
 
-    useEffect(() => {
-        if (!isLoggedIn) navigate("/");
-    }, [isLoggedIn, navigate]);
+  const isAuthenticated = token || localToken;
+  console.log("AuthenticatedRoute - Token from Recoil:", token);
+  console.log("AuthenticatedRoute - Token from localStorage:", localToken);
+  console.log("AuthenticatedRoute - isAuthenticated:", isAuthenticated);
 
-    return <>{children}</>;
+  if (!isAuthenticated) {
+    console.log("User not authenticated, redirecting to /login");
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 };
 
 export default AuthenticatedRoute;

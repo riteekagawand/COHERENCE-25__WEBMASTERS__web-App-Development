@@ -16,7 +16,7 @@ const HeroSection = () => {
           <p className="text-gray-500 text-sm sm:text-base md:text-lg font-grotesk">
           "Experience the next generation of urban living with cutting-edge technology, sustainable solutions, and seamless connectivity."
           </p>
-          <button className="bg-black text-white px-4 py-2 sm:px-6 font-grotesk sm:py-3 rounded-full text-sm sm:text-base hover:bg-gray-800">
+          <button className="bg-[#36512e] text-white px-4 py-2 sm:px-6 font-grotesk sm:py-3 rounded-full text-sm sm:text-base hover:bg-gray-800">
           Explore Innovations
           </button>
         </div>
