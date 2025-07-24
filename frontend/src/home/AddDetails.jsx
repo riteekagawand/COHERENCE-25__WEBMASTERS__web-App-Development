@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,6 @@ import { userState } from "@/store/auth";
 import { useRecoilValue } from "recoil";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { MdCancel } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 
 const AddDetailForm = () => {
@@ -37,7 +36,6 @@ const AddDetailForm = () => {
     dateofbirth: "",
     address: "",
   });
-  const [newTech, setNewTech] = useState("");
 
   useEffect(() => {
     if (user && isDetailsIncomplete(user)) {

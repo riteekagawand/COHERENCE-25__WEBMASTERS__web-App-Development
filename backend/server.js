@@ -12,7 +12,25 @@ dotenv.config();
 const app = express();
 
 // ✅ CORS Setup (Allows Requests from Frontend)
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://smart-grid.vercel.app"
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json()); // ✅ JSON Parsing
 app.use(express.urlencoded({ extended: true })); // ✅ Form Data Parsing
 
