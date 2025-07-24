@@ -3,6 +3,6 @@ import { getUtilities } from '../controller/utilityController.js';
 
 const router = express.Router();
 
-router.get('/utilities', getUtilities);
+router.get('/', getUtilities);
 
 export default router;

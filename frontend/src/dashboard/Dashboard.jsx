@@ -129,6 +129,53 @@ const Dashboard = () => {
     return nearestCity;
   };
 
+    const [alerts, setAlerts] = useState([]);
+    const [error, setError] = useState("");
+  
+    useEffect(() => {
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            fetchAlerts(latitude, longitude);
+          },
+          (error) => {
+            setError("Please enable location access.");
+            console.error(error);
+          }
+        );
+      } else {
+        setError("Geolocation is not supported by your browser.");
+      }
+    }, []);
+  
+    const fetchAlerts = async (latitude, longitude) => {
+      try {
+        const response = await fetch("http://localhost:5000/api/alerts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ latitude, longitude }),
+        });
+    
+        if (!response.ok) {
+          throw new Error("Failed to fetch alerts");
+        }
+    
+        const data = await response.json();
+        setAlerts(data.alerts);
+      } catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+    };
+    
+  
+    const getAlertColor = (type) => {
+      if (type === "Weather") return "bg-red-500"; // Weather Alert (Red)
+      if (type === "Air Quality") return "bg-yellow-500"; // AQI Alert (Yellow)
+      if (type === "Traffic") return "bg-blue-500"; // Traffic Alert (Blue)
+      return "bg-gray-500"; // Default (Gray)
+    };
+
   const generateHistoricalData = (baseValue, range, count = 24) => {
     const data = [];
     for (let i = 0; i < count; i++) {
@@ -501,9 +548,34 @@ const Dashboard = () => {
       <Sidebar />
       <div className="flex-1 p-4">
   {/* Place the SVG here */}
-  <div className="mb-4">
-    <img src={Cta} alt="Description" className="w-full h-48 rounded-2xl" />
+  <div className="relative mb-4">
+  {/* SVG/Image */}
+  <img
+    src={Cta}
+    alt="Description"
+    className="w-full h-48 rounded-2xl"
+  />
+  
+  {/* Alerts/Text */}
+  <div className="absolute top-0 left-0 w-full h-full p-4 flex items-start mt-5 justify-start rounded-2xl">
+    {alerts.length > 0 ? (
+      alerts.map((alert, index) => (
+        <div
+          key={index}
+          className={`p-3 text-white rounded my-2 ${getAlertColor(alert.type)}`}
+        >
+          🚨 <strong>{alert.type} Alert:</strong> {alert.event} - {alert.description}
+        </div>
+      ))
+    ) : (
+      <p className="text-green-500 text-xl bg-white bg-opacity-90 p-2 rounded-3xl">
+        ✅ No alerts at this time.
+      </p>
+    )}
+    {error && <p className="text-red-500 bg-white bg-opacity-90 p-2 rounded">{error}</p>}
   </div>
+</div>
+
 </div>
 
         <div className="w-full max-w-md mb-4 ml-5">
